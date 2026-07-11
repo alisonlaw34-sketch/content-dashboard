@@ -1,0 +1,914 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Content Engine — Alison Law</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg-page:#F7F8FA; --bg-card:#FFFFFF; --sidebar:#FFFFFF;
+    --border:#EAECF0; --border-strong:#D0D5DD;
+    --text-primary:#101828; --text-secondary:#667085; --text-muted:#98A2B3;
+    --accent:#4B6BFB; --accent-tint:#EEF2FF; --accent-hover:#3A57E8;
+    --green:#12B76A; --green-tint:#E6F7EE;
+    --amber:#F79009; --amber-tint:#FFF6E6;
+    --red:#F04438; --red-tint:#FEE4E2;
+    --purple:#7A5AF8; --purple-tint:#F4EBFF;
+    --radius-sm:8px; --radius-md:10px; --radius-lg:12px; --radius-pill:999px;
+    --shadow-card:0 1px 3px rgba(16,24,40,.08), 0 1px 2px rgba(16,24,40,.04);
+    --shadow-modal:0 20px 40px rgba(16,24,40,.20), 0 4px 12px rgba(16,24,40,.10);
+    /* legacy aliases kept so nothing is missed */
+    --bg-light:var(--bg-page); --bg-dark:var(--text-primary);
+    --taupe:var(--accent); --sage:var(--green); --warn:var(--red);
+    --rule-light:var(--border); --rule-dark:var(--border-strong);
+    --card:var(--bg-card); --text-on-dark:#FFFFFF;
+  }
+  *{box-sizing:border-box; margin:0; padding:0; -webkit-tap-highlight-color:transparent;}
+  body{background:var(--bg-page); color:var(--text-primary); font-family:'Inter',-apple-system,'Segoe UI',sans-serif; font-size:15px; line-height:1.5;}
+  button{font-family:'Inter',-apple-system,'Segoe UI',sans-serif; cursor:pointer; border:none; background:none; font-size:14px; color:inherit;}
+  input,textarea,select{font-family:'Inter',-apple-system,'Segoe UI',sans-serif; font-size:14px; color:var(--text-primary); background:var(--bg-card); border:1px solid var(--border); border-radius:var(--radius-sm); padding:10px 12px; width:100%;}
+  input:focus,textarea:focus,select:focus{outline:2px solid var(--accent-tint); border-color:var(--accent);}
+  h1,h2,h3{font-family:'Inter',-apple-system,'Segoe UI',sans-serif; font-weight:700; letter-spacing:-0.01em; line-height:1.2; color:var(--text-primary);}
+  .qs{font-family:'Inter',-apple-system,'Segoe UI',sans-serif;}
+
+  /* ---- app shell / sidebar ---- */
+  .app-shell{display:flex; min-height:100vh; align-items:stretch;}
+  .sidebar{width:220px; flex:none; background:var(--sidebar); border-right:1px solid var(--border); display:flex; flex-direction:column; position:sticky; top:0; height:100vh; z-index:10;}
+  .sidebar-brand{display:flex; align-items:center; gap:10px; padding:20px 18px 16px;}
+  .brand-mark{width:32px; height:32px; border-radius:var(--radius-sm); background:var(--accent); color:#fff; display:flex; align-items:center; justify-content:center; font-weight:700; font-size:13px; letter-spacing:.02em;}
+  .brand-name{font-weight:600; font-size:15px; color:var(--text-primary);}
+  .main-wrap{flex:1; min-width:0; display:flex; flex-direction:column;}
+
+  /* ---- top bar ---- */
+  header{background:var(--bg-card); border-bottom:1px solid var(--border); padding:16px 32px;}
+  .hd-top{display:flex; align-items:center; justify-content:space-between; gap:16px; flex-wrap:wrap;}
+  .hd-top h1{font-size:20px;}
+  .hd-top .wk{font-size:13px; font-weight:500; color:var(--text-secondary);}
+  .hd-icons{display:flex; gap:10px; align-items:center;}
+  .hd-icons button{color:var(--text-secondary); font-size:15px; width:36px; height:36px; border-radius:var(--radius-sm); border:1px solid var(--border); display:flex; align-items:center; justify-content:center; background:var(--bg-card);}
+  .hd-icons button:hover{border-color:var(--border-strong); color:var(--text-primary);}
+  .dot{width:9px; height:9px; display:inline-block; border-radius:50%; background:var(--text-muted);}
+  .dot.ok{background:var(--green);} .dot.pending{background:var(--amber);} .dot.error{background:var(--red);}
+  .hd-stats{display:flex; align-items:center; gap:16px; flex-wrap:wrap;}
+  .stat-block{text-align:center; line-height:1.1;}
+  .streak-num{font-size:26px; font-weight:700; line-height:1; color:var(--text-primary);}
+  .streak-lbl{font-size:10px; color:var(--text-muted); letter-spacing:.04em; text-transform:uppercase; margin-top:2px;}
+  .countdown{font-size:12px; font-weight:500; color:var(--text-secondary); background:var(--bg-page); border:1px solid var(--border); border-radius:var(--radius-pill); padding:7px 14px;}
+  .countdown.overdue{color:var(--red); background:var(--red-tint); border-color:var(--red-tint);}
+  #postedBtn{background:var(--accent); color:#fff; padding:10px 18px; font-size:14px; font-weight:600; border-radius:var(--radius-sm); box-shadow:var(--shadow-card);}
+  #postedBtn:hover{background:var(--accent-hover);}
+  #postedBtn.done{background:var(--green); pointer-events:none;}
+
+  /* ---- sidebar nav (tabs) ---- */
+  nav{display:flex; flex-direction:column; gap:2px; padding:8px 12px; flex:1;}
+  nav button{flex:none; display:flex; align-items:center; gap:10px; text-align:left; padding:10px 12px; border-radius:var(--radius-sm); font-size:14px; font-weight:500; color:var(--text-secondary); border-bottom:none; min-height:44px;}
+  nav button:hover{background:var(--bg-page); color:var(--text-primary);}
+  nav button.active{color:var(--accent); background:var(--accent-tint); font-weight:600;}
+  nav button .nav-ic{font-size:15px; line-height:1;}
+  nav button .cnt{margin-left:auto; color:inherit; opacity:.75; font-size:12px; font-weight:500;}
+
+  main{max-width:900px; margin:0 auto; padding:24px 32px 100px; width:100%;}
+  section{display:none;} section.active{display:block;}
+
+  /* ---- chips ---- */
+  .chip{font-size:11px; font-weight:600; letter-spacing:.01em; padding:4px 10px; border-radius:var(--radius-pill); display:inline-block;}
+  .chip.P1{background:var(--accent-tint); color:var(--accent);}
+  .chip.P2{background:var(--green-tint); color:var(--green);}
+  .chip.P3{background:var(--amber-tint); color:var(--amber);}
+  .chip.P4{background:var(--purple-tint); color:var(--purple);}
+  .fmt{font-size:11px; font-weight:500; letter-spacing:.01em; padding:3px 9px; border-radius:var(--radius-pill); border:1px solid var(--border); color:var(--text-secondary);}
+
+  /* ---- week cards ---- */
+  .banner{border:1px solid var(--red-tint); background:var(--red-tint); color:#B42318; border-radius:var(--radius-md); font-size:13px; padding:12px 14px; margin-bottom:14px;}
+  .budget{font-size:12px; color:var(--text-secondary); margin-bottom:16px; line-height:1.7; background:var(--bg-card); border:1px solid var(--border); border-radius:var(--radius-md); padding:10px 14px;}
+  .daycard{background:var(--bg-card); border:1px solid var(--border); border-radius:var(--radius-lg); box-shadow:var(--shadow-card); padding:16px; margin-bottom:12px;}
+  .daycard.posted{opacity:.6;}
+  .dc-top{display:flex; align-items:center; gap:8px; margin-bottom:10px; flex-wrap:wrap;}
+  .dc-day{font-size:14px; font-weight:700; min-width:52px; color:var(--text-primary);}
+  .dc-title{font-size:15px; margin-bottom:12px; color:var(--text-primary); font-weight:500;}
+  .stepper{display:flex; flex-wrap:wrap; gap:6px; margin-bottom:12px;}
+  .stepper button{font-size:11px; font-weight:500; letter-spacing:.02em; padding:6px 11px; border-radius:var(--radius-pill); border:1px solid var(--border); color:var(--text-secondary); background:var(--bg-page);}
+  .stepper button.on{background:var(--accent); color:#fff; border-color:var(--accent);}
+  .dc-foot{display:flex; align-items:center; gap:10px; flex-wrap:wrap;}
+  .dc-foot label{font-size:13px; color:var(--text-secondary); display:flex; align-items:center; gap:8px; cursor:pointer;}
+  .dc-foot input[type=checkbox]{width:20px; height:20px; accent-color:var(--green);}
+  .linkbtn{font-size:12px; font-weight:500; color:var(--text-secondary); letter-spacing:.01em; padding:7px 10px; border:1px solid var(--border); border-radius:var(--radius-sm); background:var(--bg-card);}
+  .linkbtn:hover{border-color:var(--border-strong); color:var(--text-primary);}
+  select.mini{width:auto; padding:5px 8px; font-size:12px; border-radius:var(--radius-sm);}
+  .slot-notes{margin-top:10px;}
+  textarea{min-height:64px; resize:vertical; line-height:1.5;}
+  .linkbtn.on{background:var(--accent-tint); color:var(--accent); border-color:var(--accent);}
+
+  /* ---- notes side drawer ---- */
+  .notes-drawer{position:fixed; top:0; right:0; height:100vh; width:420px; max-width:92vw; background:var(--bg-card); border-left:1px solid var(--border); box-shadow:var(--shadow-modal); transform:translateX(100%); transition:transform .22s ease; z-index:25; display:flex; flex-direction:column;}
+  .notes-drawer.open{transform:translateX(0);}
+  .nd-head{display:flex; align-items:flex-start; justify-content:space-between; gap:10px; padding:18px 20px; border-bottom:1px solid var(--border); flex:none;}
+  .nd-head h2{font-size:16px;}
+  .nd-head .sub{font-size:12px; color:var(--text-secondary); margin-top:3px; line-height:1.4;}
+  .nd-close{width:32px; height:32px; flex:none; border:1px solid var(--border); border-radius:var(--radius-sm); color:var(--text-secondary); display:flex; align-items:center; justify-content:center; background:var(--bg-card);}
+  .nd-close:hover{border-color:var(--border-strong); color:var(--text-primary);}
+  .notes-drawer textarea{flex:1; width:100%; border:none; border-radius:0; resize:none; padding:18px 20px; font-size:15px; line-height:1.7; min-height:0;}
+  .notes-drawer textarea:focus{outline:none;}
+
+  /* ---- reorder arrows ---- */
+  .week-row{margin-bottom:16px;}
+  .day-head{display:flex; align-items:center; gap:8px; font-size:12px; font-weight:600; color:var(--text-secondary); text-transform:uppercase; letter-spacing:.05em; margin:0 2px 6px;}
+  .ord-btns{display:flex; gap:3px; flex:none;}
+  .ord-btns button{width:28px; height:28px; border:1px solid var(--border); border-radius:var(--radius-sm); color:var(--text-secondary); font-size:10px; background:var(--bg-card); display:flex; align-items:center; justify-content:center; line-height:1;}
+  .ord-btns button:hover{border-color:var(--border-strong); color:var(--text-primary);}
+  .ord-btns button:disabled{opacity:.3; pointer-events:none;}
+  .ord-btns.v{flex-direction:column;}
+  .day-head .ord-btns{margin-left:auto;}
+
+  /* ---- pillar dropdown (colored) ---- */
+  .pill-select{appearance:none; -webkit-appearance:none; border:none; font-weight:600; font-size:11px; letter-spacing:.01em; border-radius:var(--radius-pill); padding:5px 12px; text-align:center;}
+  .pill-select.P1{background:var(--accent-tint); color:var(--accent);}
+  .pill-select.P2{background:var(--green-tint); color:var(--green);}
+  .pill-select.P3{background:var(--amber-tint); color:var(--amber);}
+  .pill-select.P4{background:var(--purple-tint); color:var(--purple);}
+
+  /* ---- editable title (contenteditable) ---- */
+  [contenteditable].dc-title, [contenteditable].txt{outline:none; border:1px solid transparent; border-radius:var(--radius-sm); padding:3px 5px; margin:0 -5px; cursor:text; white-space:pre-wrap;}
+  [contenteditable].dc-title:hover, [contenteditable].txt:hover{border-color:var(--border);}
+  [contenteditable].dc-title:focus, [contenteditable].txt:focus{border-color:var(--accent); background:var(--bg-page);}
+  [contenteditable]:empty:before{content:attr(data-ph); color:var(--text-muted);}
+
+  /* ---- emergency shelf ---- */
+  .shelf-head{font-size:14px; font-weight:600; color:var(--text-primary); margin:26px 2px 12px; display:flex; align-items:baseline; gap:8px; border-top:1px solid var(--border); padding-top:20px;}
+  .shelf-head small{font-weight:400; color:var(--text-muted); font-size:12px;}
+  .em-shelf-item{display:flex; align-items:center; gap:10px; background:var(--bg-card); border:1px solid var(--border); border-radius:var(--radius-md); padding:10px 12px; margin-bottom:8px; box-shadow:var(--shadow-card);}
+  .em-shelf-item .et{flex:1; font-size:14px; min-width:0;}
+
+  /* ---- ideas ---- */
+  .capture{background:var(--bg-card); border:1px solid var(--border); border-radius:var(--radius-lg); box-shadow:var(--shadow-card); padding:14px; margin-bottom:16px;}
+  .capture-row{display:flex; gap:8px; margin-top:8px;}
+  .pillar-picker{display:flex; gap:6px;}
+  .pillar-picker button{border:1px solid var(--border); border-radius:var(--radius-pill); color:var(--text-secondary); padding:8px 14px; font-size:13px; font-weight:500;}
+  .pillar-picker button.sel.P1{background:var(--accent); color:#fff; border-color:var(--accent);}
+  .pillar-picker button.sel.P2{background:var(--green); color:#fff; border-color:var(--green);}
+  .pillar-picker button.sel.P3{background:var(--amber); color:#fff; border-color:var(--amber);}
+  .pillar-picker button.sel.P4{background:var(--purple); color:#fff; border-color:var(--purple);}
+  #addIdea{background:var(--accent); color:#fff; padding:8px 20px; margin-left:auto; border-radius:var(--radius-sm); font-weight:600;}
+  #addIdea:hover{background:var(--accent-hover);}
+  .filters{display:flex; gap:6px; flex-wrap:wrap; margin-bottom:12px;}
+  .filters button{border:1px solid var(--border); border-radius:var(--radius-pill); color:var(--text-secondary); padding:7px 14px; font-size:13px; font-weight:500; background:var(--bg-card);}
+  .filters button.sel{background:var(--accent); color:#fff; border-color:var(--accent);}
+  #search{margin-bottom:14px;}
+  .idea{background:var(--bg-card); border:1px solid var(--border); border-radius:var(--radius-md); padding:12px 14px; margin-bottom:8px; display:flex; gap:10px; align-items:flex-start;}
+  .idea .body{flex:1;}
+  .idea .txt{font-size:14px; color:var(--text-primary);}
+  .idea .meta{font-size:11px; color:var(--text-muted); margin-top:5px; display:flex; gap:8px; align-items:center; flex-wrap:wrap;}
+  .idea .acts{display:flex; flex-direction:row; gap:6px;}
+  .idea .acts button{font-size:14px; padding:6px 8px; border:1px solid var(--border); border-radius:var(--radius-sm); color:var(--text-secondary); line-height:1; background:var(--bg-card);}
+  .idea .acts button.on{background:var(--accent-tint); color:var(--accent); border-color:var(--accent-tint);}
+  .idea .acts button.on.em{background:var(--amber-tint); color:var(--amber); border-color:var(--amber-tint);}
+  .groupHead{font-size:13px; font-weight:600; margin:18px 0 8px; padding:9px 14px; background:var(--bg-page); border:1px solid var(--border); border-radius:var(--radius-sm); color:var(--text-primary); display:flex; align-items:center; gap:8px;}
+  .groupHead small{font-size:11px; color:var(--text-muted); font-weight:500; letter-spacing:.02em;}
+
+  /* ---- shortlist ---- */
+  .sl-idea{background:var(--bg-card); border:1px solid var(--border); border-radius:var(--radius-lg); box-shadow:var(--shadow-card); padding:14px; margin-bottom:12px;}
+  .sl-head{display:flex; gap:10px; align-items:flex-start;}
+  .sl-head .txt{flex:1; font-size:14px; color:var(--text-primary);}
+  .sl-controls{display:flex; gap:10px; margin-top:10px; align-items:center; flex-wrap:wrap; font-size:12px; color:var(--text-secondary);}
+  .sl-notes{margin-top:10px;}
+  #startWeek{background:var(--accent); color:#fff; padding:13px 22px; font-size:14px; font-weight:600; border-radius:var(--radius-md); width:100%; margin-top:8px;}
+  #startWeek:hover{background:var(--accent-hover);}
+  .hint{font-size:12px; color:var(--text-secondary); margin-bottom:14px; line-height:1.6;}
+
+  /* ---- modal ---- */
+  .modal-bg{position:fixed; inset:0; background:rgba(16,24,40,.45); display:none; z-index:20; padding:20px; overflow-y:auto;}
+  .modal-bg.open{display:flex; align-items:flex-start; justify-content:center;}
+  .modal{background:var(--bg-card); border:1px solid var(--border); border-radius:var(--radius-lg); box-shadow:var(--shadow-modal); max-width:560px; width:100%; padding:22px; margin-top:4vh;}
+  .modal h2{font-size:18px; margin-bottom:12px;}
+  .modal .frow{margin-bottom:10px;}
+  .modal .frow label{font-size:12px; font-weight:500; color:var(--text-secondary); display:block; margin-bottom:4px;}
+  .modal .btns{display:flex; gap:10px; margin-top:14px; flex-wrap:wrap;}
+  .modal .btns button{border:1px solid var(--border); border-radius:var(--radius-sm); padding:10px 16px; font-size:14px; font-weight:500;}
+  .modal .btns .primary{background:var(--accent); color:#fff; border-color:var(--accent);}
+  .modal .btns .primary:hover{background:var(--accent-hover);}
+  .em-pick{background:var(--bg-card); border:1px solid var(--border); border-radius:var(--radius-md); padding:12px 14px; margin-bottom:8px; width:100%; text-align:left; font-size:14px; display:flex; align-items:center; gap:8px;}
+  .em-pick:hover{border-color:var(--accent); background:var(--accent-tint);}
+  .modal .note{font-size:12px; color:var(--text-secondary); line-height:1.6; margin-bottom:12px;}
+  .toast{position:fixed; bottom:18px; left:50%; transform:translateX(-50%); background:var(--text-primary); color:#fff; font-size:13px; font-weight:500; padding:10px 18px; border-radius:var(--radius-pill); box-shadow:var(--shadow-modal); z-index:30; display:none;}
+  .empty{font-style:italic; color:var(--text-muted); padding:20px 0; font-size:14px;}
+
+  @media(max-width:768px){
+    .app-shell{flex-direction:column;}
+    .sidebar{position:fixed; bottom:0; left:0; right:0; top:auto; width:100%; height:auto; flex-direction:row; border-right:none; border-top:1px solid var(--border); z-index:50; box-shadow:0 -2px 8px rgba(16,24,40,.06);}
+    .sidebar-brand{display:none;}
+    .sidebar nav{flex-direction:row; width:100%; padding:6px 8px; gap:4px;}
+    .sidebar nav button{flex:1; flex-direction:column; gap:3px; padding:8px 4px; font-size:11px; min-height:48px; justify-content:center; text-align:center; border-radius:var(--radius-sm);}
+    .sidebar nav button .cnt{margin-left:0; font-size:10px;}
+    .main-wrap{padding-bottom:64px;}
+    header{padding:14px 16px;}
+    main{padding:16px 16px 90px;}
+    .hd-top{gap:10px;}
+    .hd-stats{gap:12px;}
+    #postedBtn{padding:11px 14px; font-size:13px;}
+    .hd-icons button{width:40px; height:40px;}
+  }
+</style>
+</head>
+<body>
+
+<div class="app-shell">
+  <aside class="sidebar">
+    <div class="sidebar-brand">
+      <span class="brand-mark">CE</span>
+      <span class="brand-name">Content engine</span>
+    </div>
+    <nav>
+      <button data-tab="week" class="active"><span class="nav-ic">🗓</span>This week</button>
+      <button data-tab="ideas"><span class="nav-ic">💡</span>Ideas <span class="cnt" id="ideaCount"></span></button>
+      <button data-tab="next"><span class="nav-ic">📋</span>Next week <span class="cnt" id="slCount"></span></button>
+    </nav>
+  </aside>
+
+  <div class="main-wrap">
+    <header>
+      <div class="hd-top">
+        <span class="wk" id="weekLabel"></span>
+        <div class="hd-stats">
+          <div class="stat-block">
+            <div class="streak-num" id="streakNum">0</div>
+            <div class="streak-lbl">day streak</div>
+          </div>
+          <div class="countdown" id="countdown"></div>
+        </div>
+        <div class="hd-icons">
+          <span class="dot" id="syncDot" title="sync status"></span>
+          <button id="backupBtn" title="Download backup">⬇</button>
+          <button id="settingsBtn" title="Sync settings">⚙</button>
+          <button id="postedBtn">Posted today ✓</button>
+        </div>
+      </div>
+    </header>
+
+    <main>
+      <section id="tab-week" class="active">
+    <div id="rotationWarn"></div>
+    <div class="budget" id="budget"></div>
+    <div id="weekList"></div>
+    <div id="weekEmergency"></div>
+  </section>
+
+  <section id="tab-ideas">
+    <div class="capture">
+      <input id="captureText" placeholder="Capture an idea — 10 seconds, one line" autocomplete="off">
+      <div class="capture-row">
+        <div class="pillar-picker" id="capturePillar">
+          <button data-p="P1" class="sel P1">P1</button>
+          <button data-p="P2">P2</button>
+          <button data-p="P3">P3</button>
+          <button data-p="P4">P4</button>
+        </div>
+        <button id="addIdea">Add</button>
+      </div>
+    </div>
+    <input id="search" placeholder="Search ideas…" autocomplete="off">
+    <div class="filters" id="filters">
+      <button data-f="all" class="sel">All</button>
+      <button data-f="P1">P1 · Perspective</button>
+      <button data-f="P2">P2 · Teaching</button>
+      <button data-f="P3">P3 · Freedom life</button>
+      <button data-f="P4">P4 · The work</button>
+      <button data-f="em">⚡ Emergency</button>
+      <button data-f="used">Archive</button>
+    </div>
+    <div id="ideaList"></div>
+  </section>
+
+      <section id="tab-next">
+        <p class="hint">Shortlist ideas from the bank (⭐), open <em>notes</em> to jot rough thoughts before scripting, edit the wording inline, and optionally pin a day + format. Use ▲▼ to reorder. On harvest day, <em>Start new week</em> rolls the shortlist into the 7 slots.</p>
+        <div id="slList"></div>
+        <button id="startWeek">Start new week →</button>
+        <div id="nextEmergency"></div>
+      </section>
+    </main>
+  </div>
+</div>
+
+<!-- settings modal -->
+<div class="modal-bg" id="settingsModal">
+  <div class="modal">
+    <h2>Sync — GitHub</h2>
+    <p class="note">Data lives in a <strong>private</strong> GitHub repo so your phone and laptop stay in sync. See SETUP.md for the one-time setup. Without this, everything still works on this device only.</p>
+    <div class="frow"><label>GitHub username (owner)</label><input id="cfgOwner" placeholder="e.g. alisonlaw"></div>
+    <div class="frow"><label>Private data repo name</label><input id="cfgRepo" placeholder="content-data"></div>
+    <div class="frow"><label>Fine-grained token (contents read/write on that repo only)</label><input id="cfgToken" type="password" placeholder="github_pat_…"></div>
+    <div class="btns">
+      <button class="primary" id="cfgSave">Save &amp; connect</button>
+      <button id="cfgDisconnect">Disconnect</button>
+      <button id="importBtn">Import data.json file</button>
+      <input type="file" id="importFile" accept=".json" style="display:none">
+      <button id="cfgClose">Close</button>
+    </div>
+  </div>
+</div>
+
+<!-- emergency picker modal -->
+<div class="modal-bg" id="emModal">
+  <div class="modal">
+    <h2>Emergency swap</h2>
+    <p class="note">Low-effort, streak-saving ideas (⚡ flagged — carousel or text-on-screen, ~20 minutes). Pick one to replace this day's post. Lowering the format is the plan working, not the plan failing.</p>
+    <div id="emList"></div>
+    <div class="btns"><button id="emClose">Cancel</button></div>
+  </div>
+</div>
+
+<div class="notes-drawer" id="notesDrawer">
+  <div class="nd-head">
+    <div><h2>Notes</h2><div class="sub" id="ndSub"></div></div>
+    <button class="nd-close" id="ndClose" title="Close notes">✕</button>
+  </div>
+  <textarea id="ndText" placeholder="Script thoughts, hook lines, b-roll to grab…"></textarea>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script type="application/json" id="seedData">{
+  "meta": {
+    "weekNumber": 1,
+    "post1Deadline": "2026-07-11",
+    "weekLabel": "Story-first week — the person behind the account is the moat"
+  },
+  "postLog": [],
+  "ideas": [
+    { "id": "i01", "pillar": "P1", "text": "Why I'm still in my corporate job and building an AI creative career anyway — the expertise-claiming post", "added": "2026-07-04", "status": "inbox", "notes": "", "emergency": false },
+    { "id": "i02", "pillar": "P2", "text": "The Claude-for-creatives series backlog (scripts already written pre-pivot) — mine these", "added": "2026-07-04", "status": "inbox", "notes": "", "emergency": false },
+    { "id": "i03", "pillar": "P4", "text": "Film-camera style profile visuals — before/after generic AI vs taste-directed output", "added": "2026-07-04", "status": "inbox", "notes": "", "emergency": false },
+    { "id": "i04", "pillar": "P1", "text": "THESIS/POST #1: \"Corporate career that looks right on paper, feels wrong at 7am. I'm not quitting — here's what I'm doing instead\" — claims expertise, opens the series", "added": "2026-07-05", "status": "shortlist", "notes": "", "emergency": false },
+    { "id": "i05", "pillar": "P3", "text": "\"I get 90 minutes a day. Here's the math.\" — pre-empts the #1 objection (easy for you), sets the constraint frame", "added": "2026-07-05", "status": "shortlist", "notes": "", "emergency": false },
+    { "id": "i06", "pillar": "P2", "text": "\"Made after bedtime. Took 11 minutes. Here's how.\" — one beautiful visual made inside the constraint, taught in 60s", "added": "2026-07-05", "status": "shortlist", "notes": "", "emergency": false },
+    { "id": "i07", "pillar": "P1", "text": "\"Is it still my work if AI helped? I've stopped asking — here's why\" — the most underserved question in the space, answered from practice", "added": "2026-07-05", "status": "shortlist", "notes": "", "emergency": false },
+    { "id": "i08", "pillar": "P3", "text": "\"My salary is my seed funding. Quitting would've killed this business.\" — contrarian, argument-starting, positions the account", "added": "2026-07-05", "status": "shortlist", "notes": "", "emergency": false },
+    { "id": "i09", "pillar": "P1", "text": "\"The career that looks right and feels wrong\" — name the dissonance of being GOOD at a job you're ambivalent about (the unoccupied middle between corporate-girlie romance and quit-porn)", "added": "2026-07-05", "status": "inbox", "notes": "", "emergency": false },
+    { "id": "i10", "pillar": "P1", "text": "Permission-slip series: \"you're allowed to want more without hating what you have\" — quiet-ambition current, high save-rate", "added": "2026-07-05", "status": "inbox", "notes": "", "emergency": true },
+    { "id": "i11", "pillar": "P1", "text": "\"I ran my career decision like a process safety review\" — engineer-brain meets creative work, unreplicable moat", "added": "2026-07-05", "status": "inbox", "notes": "", "emergency": false },
+    { "id": "i12", "pillar": "P2", "text": "The 90-minute workflow series (recurring format) — real output inside a named time-box, start to finish, bedtime deadline assumed", "added": "2026-07-05", "status": "inbox", "notes": "", "emergency": false },
+    { "id": "i13", "pillar": "P2", "text": "Taste teardowns: \"why this AI image is slop and this one isn't, in 60s\" — topic APPRECIATES as slop-fatigue grows (enthusiasm 60%→26%)", "added": "2026-07-05", "status": "inbox", "notes": "", "emergency": false },
+    { "id": "i14", "pillar": "P2", "text": "\"You bring the taste, AI brings the speed\" — fix-the-slop before/afters (highest-completion format)", "added": "2026-07-05", "status": "inbox", "notes": "", "emergency": false },
+    { "id": "i15", "pillar": "P2", "text": "The workflow-that-doesn't-go-stale angle — teach the thinking, name the tool second (answers #1 course regret)", "added": "2026-07-05", "status": "inbox", "notes": "", "emergency": false },
+    { "id": "i16", "pillar": "P3", "text": "Time-poverty math, shown honestly — where the hours actually come from and what gets dropped", "added": "2026-07-05", "status": "inbox", "notes": "", "emergency": false },
+    { "id": "i17", "pillar": "P3", "text": "Money honesty at small scale: \"month 2: $0. Here's why I'm still doing it\" — small true numbers out-trust big claimed ones in 2026", "added": "2026-07-05", "status": "inbox", "notes": "", "emergency": false },
+    { "id": "i18", "pillar": "P1", "text": "Format engine idea: serialise everything as numbered episodes (\"Building this without quitting — day 12\") — a follow is the only way to see ep.13", "added": "2026-07-05", "status": "inbox", "notes": "", "emergency": false },
+    { "id": "i19", "pillar": "P4", "text": "Portfolio pieces w/ one-line arc captions (\"made after bedtime, episode 23\") — proof of every Pillar 1–3 claim", "added": "2026-07-05", "status": "inbox", "notes": "", "emergency": false },
+    { "id": "i20", "pillar": "P1", "text": "You're not competing with AI — you're competing with people who already started figuring it out", "added": "2026-07-05", "status": "inbox", "notes": "", "emergency": true },
+    { "id": "i21", "pillar": "P1", "text": "\"Prompting\" is the wrong skill — it's creative direction, and you already have it", "added": "2026-07-05", "status": "inbox", "notes": "", "emergency": false },
+    { "id": "i22", "pillar": "P1", "text": "AI doesn't level the playing field, it raises it — taste is the gap now", "added": "2026-07-05", "status": "inbox", "notes": "", "emergency": false },
+    { "id": "i23", "pillar": "P1", "text": "\"I'm not technical\" isn't the barrier, taste is — I taught myself this at night, 10 years into corporate", "added": "2026-07-05", "status": "inbox", "notes": "", "emergency": false },
+    { "id": "i24", "pillar": "P1", "text": "\"AI is just a tool\" is the lazy take — it's a tool the way a darkroom is; the eye still does the work", "added": "2026-07-05", "status": "inbox", "notes": "", "emergency": false },
+    { "id": "i25", "pillar": "P1", "text": "Everyone's obsessed with how fast AI is — when you're time-poor the real gift is iterating for free until it's right", "added": "2026-07-05", "status": "inbox", "notes": "", "emergency": false },
+    { "id": "i26", "pillar": "P1", "text": "Generating one good image isn't the skill — twenty that look like the same shoot is", "added": "2026-07-05", "status": "inbox", "notes": "", "emergency": false },
+    { "id": "i27", "pillar": "P2", "text": "My 3-step framework for consistent AI images", "added": "2026-07-05", "status": "inbox", "notes": "", "emergency": false },
+    { "id": "i28", "pillar": "P2", "text": "Stop typing prompts and hoping — write a brief. The 5 things I put in every one", "added": "2026-07-05", "status": "inbox", "notes": "", "emergency": true },
+    { "id": "i29", "pillar": "P2", "text": "My actual toolkit — what I really use, built around an hour here and there, not a studio", "added": "2026-07-05", "status": "inbox", "notes": "", "emergency": false },
+    { "id": "i30", "pillar": "P2", "text": "The prompt structure I use for interiors (my aesthetic)", "added": "2026-07-05", "status": "inbox", "notes": "", "emergency": false },
+    { "id": "i31", "pillar": "P2", "text": "What I check before an image is \"done\" and I'll actually post it", "added": "2026-07-05", "status": "inbox", "notes": "", "emergency": false },
+    { "id": "i32", "pillar": "P2", "text": "Build a style reference before you prompt — the one step that changes everything (← product candidate)", "added": "2026-07-05", "status": "inbox", "notes": "", "emergency": false },
+    { "id": "i33", "pillar": "P2", "text": "The 20% I do after AI generates — where the taste actually goes in", "added": "2026-07-05", "status": "inbox", "notes": "", "emergency": false },
+    { "id": "i34", "pillar": "P3", "text": "My worst AI month — everything looked mediocre. What I actually learned", "added": "2026-07-05", "status": "inbox", "notes": "", "emergency": false },
+    { "id": "i35", "pillar": "P3", "text": "When the AI output is genuinely bad — how I fix it, in real time", "added": "2026-07-05", "status": "inbox", "notes": "", "emergency": false },
+    { "id": "i36", "pillar": "P4", "text": "One prompt, 60 seconds — and here's the actual prompt", "added": "2026-07-05", "status": "inbox", "notes": "", "emergency": false },
+    { "id": "i37", "pillar": "P4", "text": "I tested 5 AI image tools — the honest ranking", "added": "2026-07-05", "status": "inbox", "notes": "", "emergency": false },
+    { "id": "i38", "pillar": "P4", "text": "Pinterest screenshot → my render, in under a minute", "added": "2026-07-05", "status": "inbox", "notes": "", "emergency": false },
+    { "id": "i39", "pillar": "P3", "text": "Juggling motherhood, a corporate job and a side hustle — why this matters to me, not just what I do", "added": "2026-07-07", "status": "inbox", "notes": "", "emergency": false },
+    { "id": "i40", "pillar": "P3", "text": "\"Mum first\" but \"this is my thing\" — holding both identities without apologising for either", "added": "2026-07-07", "status": "inbox", "notes": "", "emergency": false },
+    { "id": "i41", "pillar": "P3", "text": "Day in the life — near-full-time working mum building the side thing (recurring arc-carrier format)", "added": "2026-07-07", "status": "inbox", "notes": "", "emergency": false },
+    { "id": "i42", "pillar": "P2", "text": "How I used Claude (Fable 5) to build my content engine — the meta post: the system that makes daily posting possible in the hours I actually have", "added": "2026-07-07", "status": "inbox", "notes": "", "emergency": false },
+    { "id": "i43", "pillar": "P3", "text": "Mums don't have a 5-9 after the 9-5 — they have an 8-5. That leaves about 90 minutes a day. (sharper hook variant of the ★ 90-minutes-math post)", "added": "2026-07-07", "status": "scheduled", "notes": "", "emergency": false },
+    { "id": "i44", "pillar": "P3", "text": "Raw opening hook: \"I'm a near-full-time working mum of a toddler under 2, about to add one more impossible thing to the list — sharing this journey\"", "added": "2026-07-07", "status": "scheduled", "notes": "", "emergency": false },
+    { "id": "i45", "pillar": "P3", "text": "How AI saves my sanity as a near-full-time working mum — (⚠ anchor in the creative work, not productivity hacks — that pillar was deliberately excluded)", "added": "2026-07-07", "status": "inbox", "notes": "", "emergency": false },
+    { "id": "i46", "pillar": "P1", "text": "The mission post: for the mums and millennials who are meant for something different — showing you can do it without sacrificing what matters", "added": "2026-07-07", "status": "inbox", "notes": "", "emergency": false },
+    { "id": "i47", "pillar": "P1", "text": "Becoming a mum changed what I value — agency, time with family, purpose, sense of self. That reordering is WHY I'm building this", "added": "2026-07-07", "status": "scheduled", "notes": "", "emergency": false },
+    { "id": "i48", "pillar": "P3", "text": "Finding your sense of self again after becoming a mum — the creative work as the way back to \"me\"", "added": "2026-07-07", "status": "inbox", "notes": "", "emergency": false },
+    { "id": "i49", "pillar": "P3", "text": "Not meeting my own high expectations — realism and self-forgiveness while building (likely a beat inside other posts, not standalone)", "added": "2026-07-07", "status": "inbox", "notes": "", "emergency": false },
+    { "id": "i50", "pillar": "P1", "text": "It's no longer just about me — the bigger goal behind the building (family, future)", "added": "2026-07-07", "status": "inbox", "notes": "", "emergency": false },
+    { "id": "i51", "pillar": "P1", "text": "To the women who want both: time with family AND independence — choosing your own destiny while being the primary caretaker", "added": "2026-07-07", "status": "inbox", "notes": "", "emergency": false },
+    { "id": "i52", "pillar": "P3", "text": "How I actually create content around full-time work and family — the honest process, and where AI carries it", "added": "2026-07-07", "status": "inbox", "notes": "", "emergency": false },
+    { "id": "i53", "pillar": "P1", "text": "Do I think AI makes someone more creative? — answered from practice, not hype", "added": "2026-07-07", "status": "scheduled", "notes": "", "emergency": false },
+    { "id": "i54", "pillar": "P1", "text": "The price tag for the person I want to become and the future I want to lead — what building this actually costs", "added": "2026-07-07", "status": "inbox", "notes": "", "emergency": false },
+    { "id": "i55", "pillar": "P1", "text": "The expertise-claiming post — engineer → AI creative, why I want to teach this", "added": "2026-07-06", "status": "inbox", "notes": "", "emergency": false },
+    { "id": "i56", "pillar": "P2", "text": "Series 1: generic AI results — the context fix", "added": "2026-07-06", "status": "inbox", "notes": "", "emergency": false },
+    { "id": "i57", "pillar": "P2", "text": "Series 2 as carousel: context — what it actually is, 5 slides", "added": "2026-07-06", "status": "inbox", "notes": "", "emergency": true },
+    { "id": "i58", "pillar": "P3", "text": "The decision: posting daily for 6 months, part-time, around my family — the trade-off", "added": "2026-07-06", "status": "inbox", "notes": "", "emergency": false },
+    { "id": "i59", "pillar": "P1", "text": "\"Feeling behind on AI\" is a marketing story someone sold you", "added": "2026-07-06", "status": "inbox", "notes": "", "emergency": false },
+    { "id": "i60", "pillar": "P2", "text": "5 signs your AI results are generic (and the one fix for all of them)", "added": "2026-07-06", "status": "inbox", "notes": "", "emergency": true },
+    { "id": "i61", "pillar": "P1", "text": "The amateur fear: nobody can tell you used AI when you use it with taste", "added": "2026-07-06", "status": "inbox", "notes": "", "emergency": false },
+    { "id": "i62", "pillar": "P1", "text": "Why I stopped chasing every new AI tool (and what I do instead)", "added": "2026-07-06", "status": "inbox", "notes": "", "emergency": false },
+    { "id": "i63", "pillar": "P1", "text": "One sentence that changes how you use AI — pull the best line from this week's experiment (recurring slot)", "added": "2026-07-06", "status": "inbox", "notes": "", "emergency": false },
+    { "id": "i64", "pillar": "P1", "text": "3 weeks of daily posting — what the data says vs what it felt like", "added": "2026-07-06", "status": "inbox", "notes": "", "emergency": false },
+    { "id": "i65", "pillar": "P3", "text": "A real week in the freedom-led business — decisions, not highlight reel", "added": "2026-07-06", "status": "inbox", "notes": "", "emergency": false },
+    { "id": "i66", "pillar": "P1", "text": "Best-performing take of the month, expanded (data-driven slot — fill once posts are live)", "added": "2026-07-06", "status": "inbox", "notes": "", "emergency": false },
+    { "id": "i67", "pillar": "P4", "text": "Month-1 portfolio compilation — everything made in 30 days", "added": "2026-07-06", "status": "inbox", "notes": "", "emergency": false },
+    { "id": "i68", "pillar": "P1", "text": "Wildcard: double down on the month's best-performing hook pattern (recurring slot)", "added": "2026-07-06", "status": "inbox", "notes": "", "emergency": false },
+    { "id": "i69", "pillar": "P2", "text": "Wildcard: answer the month's most-asked comment question (recurring slot)", "added": "2026-07-06", "status": "inbox", "notes": "", "emergency": false }
+  ],
+  "week": [
+    { "day": 1, "ideaId": "i44", "pillar": "P1", "format": "TH", "title": "The opener — \"I'm a near-full-time working mum of a toddler under 2, about to add one more impossible thing to the list — sharing this journey\"", "stage": "planned", "postedDate": null, "notes": "" },
+    { "day": 2, "ideaId": "i53", "pillar": "P1", "format": "TH", "title": "Do I think AI makes someone more creative? — POV post, answered from practice", "stage": "planned", "postedDate": null, "notes": "" },
+    { "day": 3, "ideaId": "i43", "pillar": "P3", "format": "text", "title": "Mums don't have a 5–9 after the 9–5 — they have an 8–5. That leaves about 90 minutes a day", "stage": "planned", "postedDate": null, "notes": "" },
+    { "day": 4, "ideaId": null, "pillar": "P2", "format": "SD", "title": "Here's what I realistically built in one nap-time session", "stage": "planned", "postedDate": null, "notes": "" },
+    { "day": 5, "ideaId": "i47", "pillar": "P3", "format": "TH", "title": "Becoming a mum changed what I value — agency, time with family, purpose, sense of self. That reordering is WHY I'm building this", "stage": "planned", "postedDate": null, "notes": "" },
+    { "day": 6, "ideaId": null, "pillar": "P3", "format": "TH", "title": "To all the other working mums — I feel you, I want to be with my family too", "stage": "planned", "postedDate": null, "notes": "" },
+    { "day": 7, "ideaId": null, "pillar": "P2", "format": "BA", "title": "\"A new AI model dropped this week and everyone's telling you you're behind. You're not.\" — Fable 5 experiment through taste + the constraint. Closes the loop on day 3", "stage": "planned", "postedDate": null, "notes": "" }
+  ]
+}</script>
+<script>
+/* ================= state ================= */
+const SEED_URL = './data.json';
+const LS_DATA = 'ce_data', LS_CFG = 'ce_cfg', LS_DIRTY = 'ce_dirty';
+const STAGES = ['planned','scripted','filmed','edited','scheduled','posted'];
+const FORMATS = ['TH','VO','SD','BA','carousel','text'];
+const FMT_LABEL = {TH:'talking-head', VO:'voiceover', SD:'screen demo', BA:'before/after', carousel:'carousel', text:'text-on-screen'};
+const PILLAR_NAME = {P1:'Perspective', P2:'Teaching', P3:'Freedom life', P4:'The work'};
+
+let data = null;
+let cfg = JSON.parse(localStorage.getItem(LS_CFG) || 'null');
+let remoteSha = null;
+let syncTimer = null;
+let ideaFilter = 'all';
+let notesTarget = null;   // {kind:'week', idx} | {kind:'idea', id}
+
+const PILLARS = ['P1','P2','P3','P4'];
+const pillarOptions = cur => PILLARS.map(p=>`<option value="${p}" ${cur===p?'selected':''}>${p}</option>`).join('');
+const fmtOptions = cur => FORMATS.map(f=>`<option value="${f}" ${cur===f?'selected':''}>${FMT_LABEL[f]}</option>`).join('');
+const clip = s => s.length>70 ? s.slice(0,70)+'…' : s;
+function isNotesTarget(kind, idx, id){ return !!notesTarget && notesTarget.kind===kind && notesTarget.idx===idx && notesTarget.id===id; }
+
+const $ = s => document.querySelector(s);
+const todayStr = () => new Date().toLocaleDateString('en-CA');
+function fmtNice(dateStr){ const [y,m,d]=dateStr.split('-').map(Number); return new Date(y,m-1,d).toLocaleDateString('en-AU',{weekday:'short',day:'numeric',month:'long'}); }
+function dayDiff(a,b){ const [ay,am,ad]=a.split('-').map(Number), [by,bm,bd]=b.split('-').map(Number); return Math.round((Date.UTC(ay,am-1,ad)-Date.UTC(by,bm-1,bd))/86400000); }
+const uid = () => 'i' + Date.now().toString(36) + Math.random().toString(36).slice(2,6);
+const esc = s => (s||'').replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+
+function toast(msg){ const t=$('#toast'); t.textContent=msg; t.style.display='block'; clearTimeout(t._h); t._h=setTimeout(()=>t.style.display='none',2200); }
+
+/* ================= persistence + sync ================= */
+function saveLocal(){
+  localStorage.setItem(LS_DATA, JSON.stringify(data));
+  localStorage.setItem(LS_DIRTY, '1');
+  setDot(cfg ? 'pending' : '');
+  if(cfg){ clearTimeout(syncTimer); syncTimer = setTimeout(pushRemote, 1500); }
+}
+function setDot(state){ $('#syncDot').className = 'dot ' + state; }
+
+function ghHeaders(){ return { 'Authorization':'Bearer '+cfg.token, 'Accept':'application/vnd.github+json' }; }
+function ghUrl(){ return `https://api.github.com/repos/${cfg.owner}/${cfg.repo}/contents/data.json`; }
+
+const decodeGh = c => JSON.parse(decodeURIComponent(escape(atob(c.replace(/\n/g,'')))));
+
+/* merge ideas that exist remotely but not locally (e.g. the Saturday research engine
+   appends to the repo copy) — additions are never lost to a local overwrite */
+function mergeRemoteIdeas(remote){
+  if(!remote || !Array.isArray(remote.ideas) || !data) return 0;
+  const have = new Set(data.ideas.map(i=>i.id));
+  const added = remote.ideas.filter(i => i && i.id && !have.has(i.id));
+  if(added.length){ data.ideas.push(...added); localStorage.setItem(LS_DATA, JSON.stringify(data)); }
+  return added.length;
+}
+
+async function pullRemote(){
+  if(!cfg) return false;
+  try{
+    const r = await fetch(ghUrl()+'?t='+Date.now(), {headers: ghHeaders()});
+    if(!r.ok) throw new Error(r.status);
+    const j = await r.json();
+    remoteSha = j.sha;
+    const remote = decodeGh(j.content);
+    if(localStorage.getItem(LS_DIRTY) === '1' && data){
+      const n = mergeRemoteIdeas(remote);       // adopt engine-added ideas first
+      if(n) toast(n + ' new idea' + (n===1?'':'s') + ' from the research engine');
+      await pushRemote();                       // then local wins
+      renderAll();
+    } else {
+      data = remote;
+      localStorage.setItem(LS_DATA, JSON.stringify(data));
+      setDot('ok'); renderAll();
+    }
+    return true;
+  }catch(e){ setDot('error'); return false; }
+}
+async function pushRemote(){
+  if(!cfg || !data) return;
+  setDot('pending');
+  const body = { message:'content engine sync', content: btoa(unescape(encodeURIComponent(JSON.stringify(data, null, 2)))) };
+  if(remoteSha) body.sha = remoteSha;
+  try{
+    let r = await fetch(ghUrl(), {method:'PUT', headers: ghHeaders(), body: JSON.stringify(body)});
+    if(r.status === 409 || r.status === 422){
+      const g = await fetch(ghUrl()+'?t='+Date.now(), {headers: ghHeaders()});
+      if(g.ok){ const gj = await g.json(); remoteSha = gj.sha; body.sha = remoteSha;
+        try{ mergeRemoteIdeas(decodeGh(gj.content)); }catch(_){}
+        body.content = btoa(unescape(encodeURIComponent(JSON.stringify(data, null, 2))));
+        r = await fetch(ghUrl(), {method:'PUT', headers: ghHeaders(), body: JSON.stringify(body)}); }
+    }
+    if(!r.ok) throw new Error(r.status);
+    remoteSha = (await r.json()).content.sha;
+    localStorage.setItem(LS_DIRTY, '0');
+    setDot('ok');
+  }catch(e){ setDot('error'); toast('Sync failed — changes saved on this device'); }
+}
+
+async function boot(){
+  const local = localStorage.getItem(LS_DATA);
+  if(local){ data = JSON.parse(local); renderAll(); }
+  if(cfg){ await pullRemote(); }
+  if(!data){
+    try{ const r = await fetch(SEED_URL); if(r.ok){ data = await r.json(); saveLocal(); renderAll(); return; } }catch(e){}
+    try{ data = JSON.parse(document.getElementById('seedData').textContent); saveLocal(); renderAll(); return; }catch(e){}
+    $('#settingsModal').classList.add('open');
+    toast('Connect GitHub or import data.json to begin');
+  }
+}
+
+/* ================= streak / header ================= */
+function streakCount(){
+  const days = new Set(data.postLog || []);
+  let s = 0; const d = new Date();
+  if(!days.has(todayStr())) d.setDate(d.getDate()-1);
+  while(days.has(d.toLocaleDateString('en-CA'))){ s++; d.setDate(d.getDate()-1); }
+  return s;
+}
+function renderHeader(){
+  $('#weekLabel').textContent = 'Week ' + (data.meta.weekNumber || 1);
+  $('#streakNum').textContent = streakCount();
+  const cd = $('#countdown');
+  if((data.postLog||[]).length > 0){
+    const last = [...data.postLog].sort().pop();
+    cd.classList.remove('overdue');
+    cd.textContent = last === todayStr() ? 'posted today — streak alive' : 'last posted ' + last;
+  } else {
+    const days = dayDiff(data.meta.post1Deadline, todayStr());
+    cd.classList.toggle('overdue', days < 0);
+    cd.textContent = days > 0 ? `post #1 due in ${days} day${days===1?'':'s'} — ${fmtNice(data.meta.post1Deadline)}`
+                   : days === 0 ? `post #1 due today — ${fmtNice(data.meta.post1Deadline)}`
+                   : 'post #1 overdue — ship anything today';
+  }
+  const done = (data.postLog||[]).includes(todayStr());
+  const pb = $('#postedBtn');
+  pb.classList.toggle('done', done);
+  pb.textContent = done ? 'Posted ✓' : 'Posted today ✓';
+  $('#ideaCount').textContent = '(' + data.ideas.filter(i=>i.status!=='used').length + ')';
+  $('#slCount').textContent = '(' + data.ideas.filter(i=>i.status==='shortlist').length + ')';
+}
+
+/* ================= this week ================= */
+function renderWeek(){
+  // rotation warning (positional days)
+  let warn = '';
+  for(let k=0;k<data.week.length-1;k++){
+    if(data.week[k].format==='TH' && data.week[k+1].format==='TH'){
+      warn = `Days ${k+1} + ${k+2} are back-to-back talking-heads — the engine rule says never two in a row. Swap one to voiceover, text, or carousel.`; break;
+    }
+  }
+  $('#rotationWarn').innerHTML = warn ? `<div class="banner">⚠ ${warn}</div>` : '';
+
+  // format budget
+  const c = f => data.week.filter(s=>s.format===f).length;
+  $('#budget').innerHTML =
+    `Format budget — TH <strong>${c('TH')}</strong>/2 · VO <strong>${c('VO')}</strong>/2–3 · carousel <strong>${c('carousel')}</strong>/1 · demo/BA <strong>${c('SD')+c('BA')}</strong>/1 · text <strong>${c('text')}</strong>`;
+
+  const wl = $('#weekList');
+  wl.innerHTML = data.week.map((s,idx) => `
+    <div class="week-row" data-ord="${idx}">
+      <div class="day-head">Day ${idx+1}
+        <span class="ord-btns">
+          <button data-wmove="${idx}|-1" title="Move up" ${idx===0?'disabled':''}>▲</button>
+          <button data-wmove="${idx}|1" title="Move down" ${idx===data.week.length-1?'disabled':''}>▼</button>
+        </span>
+      </div>
+      <div class="daycard ${s.stage==='posted'?'posted':''}">
+        <div class="dc-top">
+          <select class="pill-select ${s.pillar}" data-wpillar="${idx}">${pillarOptions(s.pillar)}</select>
+          <select class="mini" data-fmt="${idx}">${fmtOptions(s.format)}</select>
+        </div>
+        <div class="dc-title" contenteditable="plaintext-only" data-wtitle="${idx}" data-ph="Add a title…">${esc(s.title)}</div>
+        <div class="stepper">${STAGES.map(st=>`<button data-stage="${idx}|${st}" class="${STAGES.indexOf(st)<=STAGES.indexOf(s.stage)?'on':''}">${st}</button>`).join('')}</div>
+        <div class="dc-foot">
+          <label><input type="checkbox" data-posted="${idx}" ${s.stage==='posted'?'checked':''}> posted</label>
+          <button class="linkbtn ${isNotesTarget('week',idx)?'on':''}" data-slotnotes="${idx}">notes${s.notes?' •':''}</button>
+        </div>
+      </div>
+    </div>`).join('');
+}
+
+/* ================= ideas ================= */
+function renderIdeas(){
+  const q = ($('#search').value||'').toLowerCase();
+  let list = data.ideas.filter(i => {
+    if(ideaFilter==='used') return i.status==='used';
+    if(i.status==='used') return false;
+    if(ideaFilter==='em') return i.emergency;
+    if(ideaFilter!=='all' && i.pillar!==ideaFilter) return false;
+    return true;
+  });
+  if(q) list = list.filter(i => i.text.toLowerCase().includes(q));
+
+  const idxOf = {}; data.ideas.forEach((it,i)=>idxOf[it.id]=i);
+  const row = i => `
+    <div class="idea" data-ord="${idxOf[i.id]}">
+      <span class="ord-btns v">
+        <button data-imove="-1" title="Move up">▲</button>
+        <button data-imove="1" title="Move down">▼</button>
+      </span>
+      <span class="chip ${i.pillar}">${i.pillar}</span>
+      <div class="body">
+        <div class="txt">${esc(i.text)}</div>
+        <div class="meta">${i.added}${i.status==='shortlist'?' · <span style="color:var(--accent)">shortlisted</span>':''}${i.status==='scheduled'?' · <span style="color:var(--green)">this week</span>':''}${i.status==='used'?' · used':''}${i.notes?' · <span style="color:var(--accent)">notes •</span>':''}</div>
+      </div>
+      <div class="acts">
+        ${i.status==='used'
+          ? `<button data-restore="${i.id}" title="Restore">↩</button>`
+          : `<button data-star="${i.id}" class="${i.status==='shortlist'?'on':''}" title="Shortlist for next week">★</button>
+             <button data-em="${i.id}" class="${i.emergency?'on em':''}" title="Emergency-ready (low effort)">⚡</button>
+             <button class="${isNotesTarget('idea',undefined,i.id)?'on':''}" data-ideanotes="${i.id}" title="Notes">✎</button>
+             <button data-arch="${i.id}" title="Archive">✕</button>`}
+      </div>
+    </div>`;
+
+  const il = $('#ideaList');
+  if(ideaFilter==='all' && !q){
+    il.innerHTML = PILLARS.map(p=>{
+      const g = list.filter(i=>i.pillar===p);
+      if(!g.length) return '';
+      return `<div class="groupHead">${p} — ${PILLAR_NAME[p]} <small>${g.length}</small></div><div class="sortable">${g.map(row).join('')}</div>`;
+    }).join('') || '<div class="empty">Nothing here.</div>';
+  } else {
+    il.innerHTML = list.length ? `<div class="sortable">${list.map(row).join('')}</div>` : '<div class="empty">Nothing here.</div>';
+  }
+}
+
+/* ================= shortlist / next week ================= */
+function renderShortlist(){
+  const sl = data.ideas.filter(i=>i.status==='shortlist');
+  const sll = $('#slList');
+  sll.innerHTML = sl.length ? `<div class="sortable">` + sl.map(i => `
+    <div class="sl-idea" data-ord="${data.ideas.indexOf(i)}">
+      <div class="sl-head">
+        <span class="ord-btns v">
+          <button data-imove="-1" title="Move up">▲</button>
+          <button data-imove="1" title="Move down">▼</button>
+        </span>
+        <select class="pill-select ${i.pillar}" data-slpillar="${i.id}">${pillarOptions(i.pillar)}</select>
+        <div class="txt" contenteditable="plaintext-only" data-sltitle="${i.id}" data-ph="Edit idea…">${esc(i.text)}</div>
+        <button class="linkbtn ${isNotesTarget('idea',undefined,i.id)?'on':''}" data-ideanotes="${i.id}">notes${i.notes?' •':''}</button>
+        <button class="linkbtn" data-unstar="${i.id}" title="Remove from shortlist">✕</button>
+      </div>
+      <div class="sl-controls">
+        <span>day</span>
+        <select class="mini" data-slday="${i.id}"><option value="">—</option>${[1,2,3,4,5,6,7].map(d=>`<option ${i.nextDay==d?'selected':''}>${d}</option>`).join('')}</select>
+        <span>format</span>
+        <select class="mini" data-slfmt="${i.id}">${fmtOptions(i.nextFormat||'TH')}</select>
+      </div>
+    </div>`).join('') + `</div>`
+  : '<div class="empty">No ideas shortlisted yet — star ★ them from the Ideas tab, or use the emergency shelf below.</div>';
+}
+
+/* ================= emergency shelves ================= */
+function renderEmergencyShelves(){
+  const picks = data.ideas.filter(i=>i.emergency && i.status!=='used');
+  const we = $('#weekEmergency');
+  if(we){
+    we.innerHTML = `<div class="shelf-head">⚡ Emergency shelf <small>low-effort streak-savers — pick a day to swap in</small></div>` + (picks.length
+      ? picks.map(i=>`<div class="em-shelf-item"><span class="chip ${i.pillar}">${i.pillar}</span><span class="et">${esc(i.text)}</span><select class="mini" data-wswap="${i.id}"><option value="">swap into…</option>${data.week.map((s,d)=>`<option value="${d}">Day ${d+1}</option>`).join('')}</select></div>`).join('')
+      : `<div class="empty">No ⚡ ideas yet — flag some in the Ideas tab (carousel/text, ~20 min each).</div>`);
+  }
+  const ne = $('#nextEmergency');
+  if(ne){
+    const avail = picks.filter(i=>i.status!=='shortlist' && i.status!=='scheduled');
+    ne.innerHTML = `<div class="shelf-head">⚡ Emergency shelf <small>tap to add to the shortlist</small></div>` + (avail.length
+      ? avail.map(i=>`<div class="em-shelf-item"><span class="chip ${i.pillar}">${i.pillar}</span><span class="et">${esc(i.text)}</span><button class="linkbtn" data-slstar="${i.id}">＋ shortlist</button></div>`).join('')
+      : `<div class="empty">No unused ⚡ ideas right now.</div>`);
+  }
+}
+
+/* swap an emergency idea into a given week slot */
+function swapIntoDay(ideaId, idx){
+  const idea = data.ideas.find(x=>x.id===ideaId); if(!idea) return;
+  const s = data.week[idx]; if(!s) return;
+  if(s.ideaId){ const old=data.ideas.find(x=>x.id===s.ideaId); if(old && old.status==='scheduled') old.status='inbox'; }
+  s.ideaId=idea.id; s.title=idea.text; s.pillar=idea.pillar;
+  s.format = idea.pillar==='P2' || /carousel/i.test(idea.text) ? 'carousel' : 'text';
+  s.stage='planned'; s.postedDate=null; idea.status='scheduled';
+  saveLocal(); renderAll(); toast(`Swapped into Day ${idx+1} — streak-saver ready`);
+}
+
+
+/* ================= start new week ================= */
+function startNewWeek(){
+  const sl = data.ideas.filter(i=>i.status==='shortlist');
+  if(!sl.length){ toast('Shortlist is empty — star some ideas first'); return; }
+  if(!confirm(`Roll over to week ${data.meta.weekNumber+1}? Posted ideas are archived; the shortlist fills next week's slots.`)) return;
+
+  for(const s of data.week){
+    if(!s.ideaId) continue;
+    const idea = data.ideas.find(i=>i.id===s.ideaId);
+    if(!idea) continue;
+    idea.status = s.stage==='posted' ? 'used' : 'shortlist';
+  }
+  const fresh = data.ideas.filter(i=>i.status==='shortlist');
+  const slots = [];
+  const byDay = {};
+  for(const i of fresh) if(i.nextDay) byDay[i.nextDay] = byDay[i.nextDay] || i;
+  const unpinned = fresh.filter(i => !Object.values(byDay).includes(i));
+  for(let d=1; d<=7; d++){
+    let idea = byDay[d] || unpinned.shift() || null;
+    slots.push(idea ? { day:d, ideaId:idea.id, pillar:idea.pillar, format:idea.nextFormat||'TH', title:idea.text, stage:'planned', postedDate:null, notes:idea.notes||'' }
+                    : { day:d, ideaId:null, pillar:'P1', format:'TH', title:'', stage:'planned', postedDate:null, notes:'' });
+    if(idea){ idea.status='scheduled'; delete idea.nextDay; }
+  }
+  data.week = slots;
+  data.meta.weekNumber++;
+  saveLocal(); renderAll();
+  toast('Week ' + data.meta.weekNumber + ' is set');
+}
+
+/* ================= events ================= */
+document.addEventListener('click', e => {
+  const t = e.target;
+
+  if(t.closest('nav button')){
+    const b = t.closest('nav button');
+    document.querySelectorAll('nav button').forEach(x=>x.classList.remove('active'));
+    b.classList.add('active');
+    document.querySelectorAll('main section').forEach(x=>x.classList.remove('active'));
+    $('#tab-'+b.dataset.tab).classList.add('active');
+    return;
+  }
+  if(!data) return;
+
+  if(t.id==='postedBtn'){
+    const td = todayStr();
+    if(!(data.postLog||[]).includes(td)){ data.postLog.push(td); saveLocal(); renderAll(); toast('Streak +1 — well done'); }
+    return;
+  }
+  if(t.dataset.stage){
+    const [idx, st] = t.dataset.stage.split('|');
+    const s = data.week[+idx];
+    if(s.stage===st){ const i=STAGES.indexOf(st); s.stage = i>0 ? STAGES[i-1] : 'planned'; }
+    else s.stage = st;
+    if(s.stage==='posted' && !s.postedDate){ s.postedDate=todayStr(); if(!data.postLog.includes(s.postedDate)) data.postLog.push(s.postedDate); }
+    saveLocal(); renderAll(); return;
+  }
+  if(t.dataset.posted !== undefined && t.type==='checkbox'){
+    const s = data.week[+t.dataset.posted];
+    if(t.checked){ s.stage='posted'; s.postedDate=todayStr(); if(!data.postLog.includes(s.postedDate)) data.postLog.push(s.postedDate); }
+    else {
+      const d = s.postedDate; s.stage='scheduled';
+      if(d && !data.week.some(x=>x!==s && x.postedDate===d)) data.postLog = data.postLog.filter(x=>x!==d);
+      s.postedDate=null;
+    }
+    saveLocal(); renderAll(); return;
+  }
+  if(t.dataset.wmove !== undefined){
+    const [i,d] = t.dataset.wmove.split('|').map(Number);
+    const j = i + d;
+    if(j<0 || j>=data.week.length) return;
+    [data.week[i], data.week[j]] = [data.week[j], data.week[i]];
+    data.week.forEach((s,k)=>s.day=k+1);
+    if(notesTarget && notesTarget.kind==='week'){ if(notesTarget.idx===i) notesTarget.idx=j; else if(notesTarget.idx===j) notesTarget.idx=i; }
+    saveLocal(); renderWeek(); return;
+  }
+  if(t.dataset.imove !== undefined){
+    const rowEl = t.closest('[data-ord]'); if(!rowEl) return;
+    const rows = [...rowEl.parentElement.querySelectorAll('[data-ord]')];
+    const i = rows.indexOf(rowEl), j = i + (+t.dataset.imove);
+    if(j<0 || j>=rows.length) return;
+    const a = +rows[i].dataset.ord, b = +rows[j].dataset.ord;
+    [data.ideas[a], data.ideas[b]] = [data.ideas[b], data.ideas[a]];
+    saveLocal(); renderIdeas(); renderShortlist(); return;
+  }
+  if(t.dataset.slotnotes !== undefined){ openNotes({kind:'week', idx:+t.dataset.slotnotes}); return; }
+  if(t.dataset.ideanotes !== undefined){ openNotes({kind:'idea', id:t.dataset.ideanotes}); return; }
+  if(t.id==='ndClose'){ closeNotes(); return; }
+  if(t.dataset.slstar){ const i=data.ideas.find(x=>x.id===t.dataset.slstar); if(i){ i.status='shortlist'; saveLocal(); renderAll(); toast('Added to shortlist'); } return; }
+
+  if(t.closest('#capturePillar button')){
+    document.querySelectorAll('#capturePillar button').forEach(x=>x.className='');
+    const b=t.closest('button'); b.className='sel '+b.dataset.p; return;
+  }
+  if(t.id==='addIdea'){
+    const txt = $('#captureText').value.trim();
+    if(!txt) return;
+    const p = document.querySelector('#capturePillar .sel').dataset.p;
+    data.ideas.unshift({id:uid(), pillar:p, text:txt, added:todayStr(), status:'inbox', notes:'', emergency:false});
+    $('#captureText').value='';
+    saveLocal(); renderAll(); toast('Captured'); return;
+  }
+  if(t.closest('#filters button')){
+    document.querySelectorAll('#filters button').forEach(x=>x.classList.remove('sel'));
+    const b=t.closest('button'); b.classList.add('sel'); ideaFilter=b.dataset.f; renderIdeas(); return;
+  }
+  if(t.dataset.star){ const i=data.ideas.find(x=>x.id===t.dataset.star); i.status = i.status==='shortlist'?'inbox':'shortlist'; saveLocal(); renderAll(); return; }
+  if(t.dataset.em){ const i=data.ideas.find(x=>x.id===t.dataset.em); i.emergency=!i.emergency; saveLocal(); renderIdeas(); renderEmergencyShelves(); return; }
+  if(t.dataset.arch){ const i=data.ideas.find(x=>x.id===t.dataset.arch); i.status='used'; saveLocal(); renderAll(); return; }
+  if(t.dataset.restore){ const i=data.ideas.find(x=>x.id===t.dataset.restore); i.status='inbox'; saveLocal(); renderAll(); return; }
+  if(t.dataset.unstar){ const i=data.ideas.find(x=>x.id===t.dataset.unstar); i.status='inbox'; saveLocal(); renderAll(); return; }
+  if(t.id==='startWeek'){ startNewWeek(); return; }
+
+  if(t.id==='settingsBtn'){ openSettings(); return; }
+  if(t.id==='cfgClose'){ $('#settingsModal').classList.remove('open'); return; }
+  if(t.id==='cfgSave'){
+    const owner=$('#cfgOwner').value.trim(), repo=$('#cfgRepo').value.trim(), token=$('#cfgToken').value.trim();
+    if(!owner||!repo||!token){ toast('Fill in all three fields'); return; }
+    const firstConnect = !cfg;   // brand-new connection on this device
+    cfg={owner,repo,token}; localStorage.setItem(LS_CFG, JSON.stringify(cfg));
+    // a device joining sync adopts the repo copy (the canonical data) rather than
+    // pushing its built-in starter seed over it; a token refresh keeps local edits
+    if(firstConnect) localStorage.setItem(LS_DIRTY, '0');
+    $('#settingsModal').classList.remove('open');
+    pullRemote().then(ok=>toast(ok?'Connected — synced':'Could not reach the repo — check details'));
+    return;
+  }
+  if(t.id==='cfgDisconnect'){ cfg=null; localStorage.removeItem(LS_CFG); setDot(''); toast('Local-only mode'); return; }
+  if(t.id==='importBtn'){ $('#importFile').click(); return; }
+  if(t.id==='backupBtn'){
+    if(!data) return;
+    const a=document.createElement('a');
+    a.href=URL.createObjectURL(new Blob([JSON.stringify(data,null,2)],{type:'application/json'}));
+    a.download='content-engine-backup-'+todayStr()+'.json'; a.click(); return;
+  }
+  if(t.id==='emClose'){ $('#emModal').classList.remove('open'); return; }
+  if(t.dataset.empick){
+    const idea = data.ideas.find(x=>x.id===t.dataset.empick);
+    const s = data.week[emSlotIdx];
+    if(s.ideaId){ const old=data.ideas.find(x=>x.id===s.ideaId); if(old) old.status='inbox'; }
+    s.ideaId=idea.id; s.title=idea.text; s.pillar=idea.pillar;
+    s.format = idea.pillar==='P2'||idea.text.toLowerCase().includes('carousel') ? 'carousel' : 'text';
+    s.stage='planned'; idea.status='scheduled';
+    $('#emModal').classList.remove('open');
+    saveLocal(); renderAll(); toast('Swapped in — 20 minutes, streak intact'); return;
+  }
+});
+
+document.addEventListener('change', e => {
+  const t = e.target;
+  if(!data) return;
+  if(t.dataset.fmt !== undefined){ data.week[+t.dataset.fmt].format=t.value; saveLocal(); renderWeek(); }
+  if(t.dataset.wpillar !== undefined){ data.week[+t.dataset.wpillar].pillar=t.value; saveLocal(); renderWeek(); }
+  if(t.dataset.wswap !== undefined && t.value!==''){ swapIntoDay(t.dataset.wswap, +t.value); }
+  if(t.dataset.slpillar !== undefined){ const i=data.ideas.find(x=>x.id===t.dataset.slpillar); if(i){ i.pillar=t.value; saveLocal(); renderShortlist(); renderIdeas(); } }
+  if(t.dataset.slday !== undefined){ const i=data.ideas.find(x=>x.id===t.dataset.slday); i.nextDay=t.value?+t.value:undefined; saveLocal(); }
+  if(t.dataset.slfmt !== undefined){ const i=data.ideas.find(x=>x.id===t.dataset.slfmt); i.nextFormat=t.value; saveLocal(); }
+  if(t.id==='importFile' && t.files[0]){
+    const fr=new FileReader();
+    fr.onload=()=>{ try{ data=JSON.parse(fr.result); saveLocal(); renderAll(); $('#settingsModal').classList.remove('open'); toast('Imported'); }catch(e){ toast('Not a valid data.json'); } };
+    fr.readAsText(t.files[0]);
+  }
+});
+
+document.addEventListener('input', e => {
+  const t = e.target;
+  if(!data) return;
+  if(t.id==='search'){ renderIdeas(); return; }
+  if(t.dataset.wtitle !== undefined){ data.week[+t.dataset.wtitle].title=t.textContent; debSave(); return; }
+  if(t.dataset.sltitle !== undefined){ const i=data.ideas.find(x=>x.id===t.dataset.sltitle); if(i) i.text=t.textContent; debSave(); return; }
+  if(t.id==='ndText' && notesTarget){
+    if(notesTarget.kind==='week'){ data.week[notesTarget.idx].notes=t.value; }
+    else { const i=data.ideas.find(x=>x.id===notesTarget.id); if(i) i.notes=t.value; }
+    debSave();
+  }
+});
+document.getElementById('captureText').addEventListener('keydown', e=>{ if(e.key==='Enter') $('#addIdea').click(); });
+
+let debTimer=null;
+function debSave(){ clearTimeout(debTimer); debTimer=setTimeout(saveLocal, 800); }
+
+function openNotes(target){
+  if(isNotesTarget(target.kind, target.idx, target.id)){ closeNotes(); return; }
+  notesTarget = target;
+  let obj, sub;
+  if(target.kind==='week'){ obj=data.week[target.idx]; const ti=(obj.title||'').replace(/\s+/g,' ').trim() || 'empty slot'; sub=`Day ${target.idx+1} · ${clip(ti)}`; }
+  else { obj=data.ideas.find(x=>x.id===target.id); if(!obj){ notesTarget=null; return; } sub=`${obj.pillar} idea · ${clip(obj.text)}`; }
+  $('#ndSub').textContent = sub;
+  $('#ndText').value = obj.notes || '';
+  $('#notesDrawer').classList.add('open');
+  $('#ndText').focus();
+  renderWeek(); renderIdeas(); renderShortlist();
+}
+function closeNotes(){ notesTarget=null; $('#notesDrawer').classList.remove('open'); renderWeek(); renderIdeas(); renderShortlist(); }
+
+let emSlotIdx = null;
+function openEmergency(idx){
+  emSlotIdx = idx;
+  const picks = data.ideas.filter(i=>i.emergency && (i.status==='inbox'||i.status==='shortlist'));
+  $('#emList').innerHTML = picks.length
+    ? picks.map(i=>`<button class="em-pick" data-empick="${i.id}"><span class="chip ${i.pillar}">${i.pillar}</span>&nbsp; ${esc(i.text)}</button>`).join('')
+    : '<div class="empty">No ⚡ emergency-flagged ideas yet — flag a few carousel/text ideas in the Ideas tab.</div>';
+  $('#emModal').classList.add('open');
+}
+function openSettings(){
+  if(cfg){ $('#cfgOwner').value=cfg.owner; $('#cfgRepo').value=cfg.repo; $('#cfgToken').value=cfg.token; }
+  $('#settingsModal').classList.add('open');
+}
+
+function renderAll(){ if(!data) return; renderHeader(); renderWeek(); renderIdeas(); renderShortlist(); renderEmergencyShelves(); }
+boot();
+</script>
+</body>
+</html>
