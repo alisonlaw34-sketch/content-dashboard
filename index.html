@@ -50,7 +50,7 @@
   .hd-icons{display:flex; gap:10px; align-items:center;}
   .hd-icons button{color:var(--text-secondary); font-size:15px; width:36px; height:36px; border-radius:var(--radius-sm); border:1px solid var(--border); display:flex; align-items:center; justify-content:center; background:var(--bg-card);}
   .hd-icons button:hover{border-color:var(--border-strong); color:var(--text-primary);}
-  .dot{width:9px; height:9px; display:inline-block; border-radius:50%; background:var(--text-muted);}
+  .dot{width:14px; height:14px; display:inline-block; border-radius:50%; background:var(--text-muted); cursor:pointer;}
   .dot.ok{background:var(--green);} .dot.pending{background:var(--amber);} .dot.error{background:var(--red);}
   .hd-stats{display:flex; align-items:center; gap:16px; flex-wrap:wrap;}
   .stat-block{text-align:center; line-height:1.1;}
@@ -169,11 +169,6 @@
   .groupHead small{font-size:11px; color:var(--text-muted); font-weight:500; letter-spacing:.02em;}
 
   /* ---- shortlist ---- */
-  .sl-idea{background:var(--bg-card); border:1px solid var(--border); border-radius:var(--radius-lg); box-shadow:var(--shadow-card); padding:14px; margin-bottom:12px;}
-  .sl-head{display:flex; gap:10px; align-items:flex-start;}
-  .sl-head .txt{flex:1; font-size:14px; color:var(--text-primary);}
-  .sl-controls{display:flex; gap:10px; margin-top:10px; align-items:center; flex-wrap:wrap; font-size:12px; color:var(--text-secondary);}
-  .sl-notes{margin-top:10px;}
   #startWeek{background:var(--accent); color:#fff; padding:13px 22px; font-size:14px; font-weight:600; border-radius:var(--radius-md); width:100%; margin-top:8px;}
   #startWeek:hover{background:var(--accent-hover);}
   .hint{font-size:12px; color:var(--text-secondary); margin-bottom:14px; line-height:1.6;}
@@ -647,23 +642,25 @@ function renderIdeas(){
 function renderShortlist(){
   const sl = data.ideas.filter(i=>i.status==='shortlist');
   const sll = $('#slList');
-  sll.innerHTML = sl.length ? `<div class="sortable">` + sl.map(i => `
-    <div class="sl-idea" data-ord="${data.ideas.indexOf(i)}">
-      <div class="sl-head">
-        <span class="ord-btns v">
-          <button data-imove="-1" title="Move up">▲</button>
-          <button data-imove="1" title="Move down">▼</button>
+  sll.innerHTML = sl.length ? `<div class="sortable">` + sl.map((i,k) => `
+    <div class="week-row" data-ord="${data.ideas.indexOf(i)}">
+      <div class="day-head">Slot ${k+1}${i.nextDay?` · pinned to Day ${i.nextDay}`:''}
+        <span class="ord-btns">
+          <button data-imove="-1" title="Move up" ${k===0?'disabled':''}>▲</button>
+          <button data-imove="1" title="Move down" ${k===sl.length-1?'disabled':''}>▼</button>
         </span>
-        <select class="pill-select ${i.pillar}" data-slpillar="${i.id}">${pillarOptions(i.pillar)}</select>
-        <div class="txt" contenteditable="plaintext-only" data-sltitle="${i.id}" data-ph="Edit idea…">${esc(i.text)}</div>
-        <button class="linkbtn ${isNotesTarget('idea',undefined,i.id)?'on':''}" data-ideanotes="${i.id}">notes${i.notes?' •':''}</button>
-        <button class="linkbtn" data-unstar="${i.id}" title="Remove from shortlist">✕</button>
       </div>
-      <div class="sl-controls">
-        <span>day</span>
-        <select class="mini" data-slday="${i.id}"><option value="">—</option>${[1,2,3,4,5,6,7].map(d=>`<option ${i.nextDay==d?'selected':''}>${d}</option>`).join('')}</select>
-        <span>format</span>
-        <select class="mini" data-slfmt="${i.id}">${fmtOptions(i.nextFormat||'TH')}</select>
+      <div class="daycard">
+        <div class="dc-top">
+          <select class="pill-select ${i.pillar}" data-slpillar="${i.id}">${pillarOptions(i.pillar)}</select>
+          <select class="mini" data-slfmt="${i.id}">${fmtOptions(i.nextFormat||'TH')}</select>
+          <select class="mini" data-slday="${i.id}"><option value="">pin to day…</option>${[1,2,3,4,5,6,7].map(d=>`<option value="${d}" ${i.nextDay==d?'selected':''}>Day ${d}</option>`).join('')}</select>
+        </div>
+        <div class="dc-title" contenteditable="plaintext-only" data-sltitle="${i.id}" data-ph="Edit idea…">${esc(i.text)}</div>
+        <div class="dc-foot">
+          <button class="linkbtn ${isNotesTarget('idea',undefined,i.id)?'on':''}" data-ideanotes="${i.id}">notes${i.notes?' •':''}</button>
+          <button class="linkbtn" data-unstar="${i.id}" title="Remove from shortlist">✕ remove</button>
+        </div>
       </div>
     </div>`).join('') + `</div>`
   : '<div class="empty">No ideas shortlisted yet — star ★ them from the Ideas tab, or use the emergency shelf below.</div>';
@@ -811,6 +808,7 @@ document.addEventListener('click', e => {
   if(t.dataset.unstar){ const i=data.ideas.find(x=>x.id===t.dataset.unstar); i.status='inbox'; saveLocal(); renderAll(); return; }
   if(t.id==='startWeek'){ startNewWeek(); return; }
 
+  if(t.id==='syncDot'){ if(cfg){ toast('Syncing…'); syncNow(); } else { openSettings(); } return; }
   if(t.id==='settingsBtn'){ openSettings(); return; }
   if(t.id==='cfgClose'){ $('#settingsModal').classList.remove('open'); return; }
   if(t.id==='cfgSave'){
@@ -853,7 +851,7 @@ document.addEventListener('change', e => {
   if(t.dataset.wpillar !== undefined){ data.week[+t.dataset.wpillar].pillar=t.value; saveLocal(); renderWeek(); }
   if(t.dataset.wswap !== undefined && t.value!==''){ swapIntoDay(t.dataset.wswap, +t.value); }
   if(t.dataset.slpillar !== undefined){ const i=data.ideas.find(x=>x.id===t.dataset.slpillar); if(i){ i.pillar=t.value; saveLocal(); renderShortlist(); renderIdeas(); } }
-  if(t.dataset.slday !== undefined){ const i=data.ideas.find(x=>x.id===t.dataset.slday); i.nextDay=t.value?+t.value:undefined; saveLocal(); }
+  if(t.dataset.slday !== undefined){ const i=data.ideas.find(x=>x.id===t.dataset.slday); i.nextDay=t.value?+t.value:undefined; saveLocal(); renderShortlist(); }
   if(t.dataset.slfmt !== undefined){ const i=data.ideas.find(x=>x.id===t.dataset.slfmt); i.nextFormat=t.value; saveLocal(); }
   if(t.id==='importFile' && t.files[0]){
     const fr=new FileReader();
@@ -908,6 +906,20 @@ function openSettings(){
 }
 
 function renderAll(){ if(!data) return; renderHeader(); renderWeek(); renderIdeas(); renderShortlist(); renderEmergencyShelves(); }
+
+/* keep devices in sync: re-pull whenever this device is picked back up or reconnects.
+   pullRemote() adopts the repo copy when this device has no unsynced edits, and pushes
+   local (merging in any new remote ideas) when it does — so returning to a device
+   refreshes it before you edit. */
+let _syncing = false;
+async function syncNow(){
+  if(!cfg || _syncing) return;
+  _syncing = true;
+  try{ await pullRemote(); } finally{ _syncing = false; }
+}
+document.addEventListener('visibilitychange', ()=>{ if(document.visibilityState==='visible') syncNow(); });
+window.addEventListener('online', syncNow);
+
 boot();
 </script>
 </body>
