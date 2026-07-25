@@ -220,6 +220,11 @@
       <button data-tab="ideas"><span class="nav-ic">💡</span>Ideas <span class="cnt" id="ideaCount"></span></button>
       <button data-tab="next"><span class="nav-ic">📋</span>Next week <span class="cnt" id="slCount"></span></button>
     </nav>
+    <div style="padding:8px 12px 14px; border-top:1px solid var(--border);">
+      <a href="./docs.html" style="display:flex; align-items:center; gap:10px; padding:10px 12px; border-radius:var(--radius-sm); font-size:14px; font-weight:500; color:var(--text-secondary); text-decoration:none;" onmouseover="this.style.background='var(--bg-page)'; this.style.color='var(--text-primary)';" onmouseout="this.style.background=''; this.style.color='var(--text-secondary)';">
+        <span class="nav-ic">📚</span>Docs
+      </a>
+    </div>
   </aside>
 
   <div class="main-wrap">
@@ -266,10 +271,10 @@
     <input id="search" placeholder="Search ideas…" autocomplete="off">
     <div class="filters" id="filters">
       <button data-f="all" class="sel">All</button>
-      <button data-f="P1">P1 · Perspective</button>
+      <button data-f="P1">P1 · Opinion</button>
       <button data-f="P2">P2 · Teaching</button>
-      <button data-f="P3">P3 · Freedom life</button>
-      <button data-f="P4">P4 · The work</button>
+      <button data-f="P3">P3 · Story</button>
+      <button data-f="P4">P4 · Motivation</button>
       <button data-f="em">⚡ Emergency</button>
       <button data-f="used">Archive</button>
     </div>
@@ -277,7 +282,7 @@
   </section>
 
       <section id="tab-next">
-        <p class="hint">Shortlist ideas from the bank (⭐), open <em>notes</em> to jot rough thoughts before scripting, edit the wording inline, and optionally pin a day + format. Use ▲▼ to reorder. On harvest day, <em>Start new week</em> rolls the shortlist into the 7 slots.</p>
+        <p class="hint">Shortlist ideas from the bank (⭐), open <em>script</em> to jot rough thoughts before scripting (and <em>caption</em> for the caption draft), edit the wording inline, and optionally pin a day + format. Use ▲▼ to reorder. On harvest day, <em>Start new week</em> rolls the shortlist into the 7 slots.</p>
         <div id="slList"></div>
         <button id="startWeek">Start new week →</button>
         <div id="nextEmergency"></div>
@@ -316,8 +321,8 @@
 
 <div class="notes-drawer" id="notesDrawer">
   <div class="nd-head">
-    <div><h2>Notes</h2><div class="sub" id="ndSub"></div></div>
-    <button class="nd-close" id="ndClose" title="Close notes">✕</button>
+    <div><h2 id="ndTitle">Script</h2><div class="sub" id="ndSub"></div></div>
+    <button class="nd-close" id="ndClose" title="Close">✕</button>
   </div>
   <textarea id="ndText" placeholder="Script thoughts, hook lines, b-roll to grab…"></textarea>
 </div>
@@ -326,90 +331,1181 @@
 
 <script type="application/json" id="seedData">{
   "meta": {
-    "weekNumber": 1,
+    "weekNumber": 2,
     "post1Deadline": "2026-07-11",
     "weekLabel": "Story-first week — the person behind the account is the moat"
   },
   "postLog": [],
   "ideas": [
-    { "id": "i01", "pillar": "P1", "text": "Why I'm still in my corporate job and building an AI creative career anyway — the expertise-claiming post", "added": "2026-07-04", "status": "inbox", "notes": "", "emergency": false },
-    { "id": "i02", "pillar": "P2", "text": "The Claude-for-creatives series backlog (scripts already written pre-pivot) — mine these", "added": "2026-07-04", "status": "inbox", "notes": "", "emergency": false },
-    { "id": "i03", "pillar": "P4", "text": "Film-camera style profile visuals — before/after generic AI vs taste-directed output", "added": "2026-07-04", "status": "inbox", "notes": "", "emergency": false },
-    { "id": "i04", "pillar": "P1", "text": "THESIS/POST #1: \"Corporate career that looks right on paper, feels wrong at 7am. I'm not quitting — here's what I'm doing instead\" — claims expertise, opens the series", "added": "2026-07-05", "status": "shortlist", "notes": "", "emergency": false },
-    { "id": "i05", "pillar": "P3", "text": "\"I get 90 minutes a day. Here's the math.\" — pre-empts the #1 objection (easy for you), sets the constraint frame", "added": "2026-07-05", "status": "shortlist", "notes": "", "emergency": false },
-    { "id": "i06", "pillar": "P2", "text": "\"Made after bedtime. Took 11 minutes. Here's how.\" — one beautiful visual made inside the constraint, taught in 60s", "added": "2026-07-05", "status": "shortlist", "notes": "", "emergency": false },
-    { "id": "i07", "pillar": "P1", "text": "\"Is it still my work if AI helped? I've stopped asking — here's why\" — the most underserved question in the space, answered from practice", "added": "2026-07-05", "status": "shortlist", "notes": "", "emergency": false },
-    { "id": "i08", "pillar": "P3", "text": "\"My salary is my seed funding. Quitting would've killed this business.\" — contrarian, argument-starting, positions the account", "added": "2026-07-05", "status": "shortlist", "notes": "", "emergency": false },
-    { "id": "i09", "pillar": "P1", "text": "\"The career that looks right and feels wrong\" — name the dissonance of being GOOD at a job you're ambivalent about (the unoccupied middle between corporate-girlie romance and quit-porn)", "added": "2026-07-05", "status": "inbox", "notes": "", "emergency": false },
-    { "id": "i10", "pillar": "P1", "text": "Permission-slip series: \"you're allowed to want more without hating what you have\" — quiet-ambition current, high save-rate", "added": "2026-07-05", "status": "inbox", "notes": "", "emergency": true },
-    { "id": "i11", "pillar": "P1", "text": "\"I ran my career decision like a process safety review\" — engineer-brain meets creative work, unreplicable moat", "added": "2026-07-05", "status": "inbox", "notes": "", "emergency": false },
-    { "id": "i12", "pillar": "P2", "text": "The 90-minute workflow series (recurring format) — real output inside a named time-box, start to finish, bedtime deadline assumed", "added": "2026-07-05", "status": "inbox", "notes": "", "emergency": false },
-    { "id": "i13", "pillar": "P2", "text": "Taste teardowns: \"why this AI image is slop and this one isn't, in 60s\" — topic APPRECIATES as slop-fatigue grows (enthusiasm 60%→26%)", "added": "2026-07-05", "status": "inbox", "notes": "", "emergency": false },
-    { "id": "i14", "pillar": "P2", "text": "\"You bring the taste, AI brings the speed\" — fix-the-slop before/afters (highest-completion format)", "added": "2026-07-05", "status": "inbox", "notes": "", "emergency": false },
-    { "id": "i15", "pillar": "P2", "text": "The workflow-that-doesn't-go-stale angle — teach the thinking, name the tool second (answers #1 course regret)", "added": "2026-07-05", "status": "inbox", "notes": "", "emergency": false },
-    { "id": "i16", "pillar": "P3", "text": "Time-poverty math, shown honestly — where the hours actually come from and what gets dropped", "added": "2026-07-05", "status": "inbox", "notes": "", "emergency": false },
-    { "id": "i17", "pillar": "P3", "text": "Money honesty at small scale: \"month 2: $0. Here's why I'm still doing it\" — small true numbers out-trust big claimed ones in 2026", "added": "2026-07-05", "status": "inbox", "notes": "", "emergency": false },
-    { "id": "i18", "pillar": "P1", "text": "Format engine idea: serialise everything as numbered episodes (\"Building this without quitting — day 12\") — a follow is the only way to see ep.13", "added": "2026-07-05", "status": "inbox", "notes": "", "emergency": false },
-    { "id": "i19", "pillar": "P4", "text": "Portfolio pieces w/ one-line arc captions (\"made after bedtime, episode 23\") — proof of every Pillar 1–3 claim", "added": "2026-07-05", "status": "inbox", "notes": "", "emergency": false },
-    { "id": "i20", "pillar": "P1", "text": "You're not competing with AI — you're competing with people who already started figuring it out", "added": "2026-07-05", "status": "inbox", "notes": "", "emergency": true },
-    { "id": "i21", "pillar": "P1", "text": "\"Prompting\" is the wrong skill — it's creative direction, and you already have it", "added": "2026-07-05", "status": "inbox", "notes": "", "emergency": false },
-    { "id": "i22", "pillar": "P1", "text": "AI doesn't level the playing field, it raises it — taste is the gap now", "added": "2026-07-05", "status": "inbox", "notes": "", "emergency": false },
-    { "id": "i23", "pillar": "P1", "text": "\"I'm not technical\" isn't the barrier, taste is — I taught myself this at night, 10 years into corporate", "added": "2026-07-05", "status": "inbox", "notes": "", "emergency": false },
-    { "id": "i24", "pillar": "P1", "text": "\"AI is just a tool\" is the lazy take — it's a tool the way a darkroom is; the eye still does the work", "added": "2026-07-05", "status": "inbox", "notes": "", "emergency": false },
-    { "id": "i25", "pillar": "P1", "text": "Everyone's obsessed with how fast AI is — when you're time-poor the real gift is iterating for free until it's right", "added": "2026-07-05", "status": "inbox", "notes": "", "emergency": false },
-    { "id": "i26", "pillar": "P1", "text": "Generating one good image isn't the skill — twenty that look like the same shoot is", "added": "2026-07-05", "status": "inbox", "notes": "", "emergency": false },
-    { "id": "i27", "pillar": "P2", "text": "My 3-step framework for consistent AI images", "added": "2026-07-05", "status": "inbox", "notes": "", "emergency": false },
-    { "id": "i28", "pillar": "P2", "text": "Stop typing prompts and hoping — write a brief. The 5 things I put in every one", "added": "2026-07-05", "status": "inbox", "notes": "", "emergency": true },
-    { "id": "i29", "pillar": "P2", "text": "My actual toolkit — what I really use, built around an hour here and there, not a studio", "added": "2026-07-05", "status": "inbox", "notes": "", "emergency": false },
-    { "id": "i30", "pillar": "P2", "text": "The prompt structure I use for interiors (my aesthetic)", "added": "2026-07-05", "status": "inbox", "notes": "", "emergency": false },
-    { "id": "i31", "pillar": "P2", "text": "What I check before an image is \"done\" and I'll actually post it", "added": "2026-07-05", "status": "inbox", "notes": "", "emergency": false },
-    { "id": "i32", "pillar": "P2", "text": "Build a style reference before you prompt — the one step that changes everything (← product candidate)", "added": "2026-07-05", "status": "inbox", "notes": "", "emergency": false },
-    { "id": "i33", "pillar": "P2", "text": "The 20% I do after AI generates — where the taste actually goes in", "added": "2026-07-05", "status": "inbox", "notes": "", "emergency": false },
-    { "id": "i34", "pillar": "P3", "text": "My worst AI month — everything looked mediocre. What I actually learned", "added": "2026-07-05", "status": "inbox", "notes": "", "emergency": false },
-    { "id": "i35", "pillar": "P3", "text": "When the AI output is genuinely bad — how I fix it, in real time", "added": "2026-07-05", "status": "inbox", "notes": "", "emergency": false },
-    { "id": "i36", "pillar": "P4", "text": "One prompt, 60 seconds — and here's the actual prompt", "added": "2026-07-05", "status": "inbox", "notes": "", "emergency": false },
-    { "id": "i37", "pillar": "P4", "text": "I tested 5 AI image tools — the honest ranking", "added": "2026-07-05", "status": "inbox", "notes": "", "emergency": false },
-    { "id": "i38", "pillar": "P4", "text": "Pinterest screenshot → my render, in under a minute", "added": "2026-07-05", "status": "inbox", "notes": "", "emergency": false },
-    { "id": "i39", "pillar": "P3", "text": "Juggling motherhood, a corporate job and a side hustle — why this matters to me, not just what I do", "added": "2026-07-07", "status": "inbox", "notes": "", "emergency": false },
-    { "id": "i40", "pillar": "P3", "text": "\"Mum first\" but \"this is my thing\" — holding both identities without apologising for either", "added": "2026-07-07", "status": "inbox", "notes": "", "emergency": false },
-    { "id": "i41", "pillar": "P3", "text": "Day in the life — near-full-time working mum building the side thing (recurring arc-carrier format)", "added": "2026-07-07", "status": "inbox", "notes": "", "emergency": false },
-    { "id": "i42", "pillar": "P2", "text": "How I used Claude (Fable 5) to build my content engine — the meta post: the system that makes daily posting possible in the hours I actually have", "added": "2026-07-07", "status": "inbox", "notes": "", "emergency": false },
-    { "id": "i43", "pillar": "P3", "text": "Mums don't have a 5-9 after the 9-5 — they have an 8-5. That leaves about 90 minutes a day. (sharper hook variant of the ★ 90-minutes-math post)", "added": "2026-07-07", "status": "scheduled", "notes": "", "emergency": false },
-    { "id": "i44", "pillar": "P3", "text": "Raw opening hook: \"I'm a near-full-time working mum of a toddler under 2, about to add one more impossible thing to the list — sharing this journey\"", "added": "2026-07-07", "status": "scheduled", "notes": "", "emergency": false },
-    { "id": "i45", "pillar": "P3", "text": "How AI saves my sanity as a near-full-time working mum — (⚠ anchor in the creative work, not productivity hacks — that pillar was deliberately excluded)", "added": "2026-07-07", "status": "inbox", "notes": "", "emergency": false },
-    { "id": "i46", "pillar": "P1", "text": "The mission post: for the mums and millennials who are meant for something different — showing you can do it without sacrificing what matters", "added": "2026-07-07", "status": "inbox", "notes": "", "emergency": false },
-    { "id": "i47", "pillar": "P1", "text": "Becoming a mum changed what I value — agency, time with family, purpose, sense of self. That reordering is WHY I'm building this", "added": "2026-07-07", "status": "scheduled", "notes": "", "emergency": false },
-    { "id": "i48", "pillar": "P3", "text": "Finding your sense of self again after becoming a mum — the creative work as the way back to \"me\"", "added": "2026-07-07", "status": "inbox", "notes": "", "emergency": false },
-    { "id": "i49", "pillar": "P3", "text": "Not meeting my own high expectations — realism and self-forgiveness while building (likely a beat inside other posts, not standalone)", "added": "2026-07-07", "status": "inbox", "notes": "", "emergency": false },
-    { "id": "i50", "pillar": "P1", "text": "It's no longer just about me — the bigger goal behind the building (family, future)", "added": "2026-07-07", "status": "inbox", "notes": "", "emergency": false },
-    { "id": "i51", "pillar": "P1", "text": "To the women who want both: time with family AND independence — choosing your own destiny while being the primary caretaker", "added": "2026-07-07", "status": "inbox", "notes": "", "emergency": false },
-    { "id": "i52", "pillar": "P3", "text": "How I actually create content around full-time work and family — the honest process, and where AI carries it", "added": "2026-07-07", "status": "inbox", "notes": "", "emergency": false },
-    { "id": "i53", "pillar": "P1", "text": "Do I think AI makes someone more creative? — answered from practice, not hype", "added": "2026-07-07", "status": "scheduled", "notes": "", "emergency": false },
-    { "id": "i54", "pillar": "P1", "text": "The price tag for the person I want to become and the future I want to lead — what building this actually costs", "added": "2026-07-07", "status": "inbox", "notes": "", "emergency": false },
-    { "id": "i55", "pillar": "P1", "text": "The expertise-claiming post — engineer → AI creative, why I want to teach this", "added": "2026-07-06", "status": "inbox", "notes": "", "emergency": false },
-    { "id": "i56", "pillar": "P2", "text": "Series 1: generic AI results — the context fix", "added": "2026-07-06", "status": "inbox", "notes": "", "emergency": false },
-    { "id": "i57", "pillar": "P2", "text": "Series 2 as carousel: context — what it actually is, 5 slides", "added": "2026-07-06", "status": "inbox", "notes": "", "emergency": true },
-    { "id": "i58", "pillar": "P3", "text": "The decision: posting daily for 6 months, part-time, around my family — the trade-off", "added": "2026-07-06", "status": "inbox", "notes": "", "emergency": false },
-    { "id": "i59", "pillar": "P1", "text": "\"Feeling behind on AI\" is a marketing story someone sold you", "added": "2026-07-06", "status": "inbox", "notes": "", "emergency": false },
-    { "id": "i60", "pillar": "P2", "text": "5 signs your AI results are generic (and the one fix for all of them)", "added": "2026-07-06", "status": "inbox", "notes": "", "emergency": true },
-    { "id": "i61", "pillar": "P1", "text": "The amateur fear: nobody can tell you used AI when you use it with taste", "added": "2026-07-06", "status": "inbox", "notes": "", "emergency": false },
-    { "id": "i62", "pillar": "P1", "text": "Why I stopped chasing every new AI tool (and what I do instead)", "added": "2026-07-06", "status": "inbox", "notes": "", "emergency": false },
-    { "id": "i63", "pillar": "P1", "text": "One sentence that changes how you use AI — pull the best line from this week's experiment (recurring slot)", "added": "2026-07-06", "status": "inbox", "notes": "", "emergency": false },
-    { "id": "i64", "pillar": "P1", "text": "3 weeks of daily posting — what the data says vs what it felt like", "added": "2026-07-06", "status": "inbox", "notes": "", "emergency": false },
-    { "id": "i65", "pillar": "P3", "text": "A real week in the freedom-led business — decisions, not highlight reel", "added": "2026-07-06", "status": "inbox", "notes": "", "emergency": false },
-    { "id": "i66", "pillar": "P1", "text": "Best-performing take of the month, expanded (data-driven slot — fill once posts are live)", "added": "2026-07-06", "status": "inbox", "notes": "", "emergency": false },
-    { "id": "i67", "pillar": "P4", "text": "Month-1 portfolio compilation — everything made in 30 days", "added": "2026-07-06", "status": "inbox", "notes": "", "emergency": false },
-    { "id": "i68", "pillar": "P1", "text": "Wildcard: double down on the month's best-performing hook pattern (recurring slot)", "added": "2026-07-06", "status": "inbox", "notes": "", "emergency": false },
-    { "id": "i69", "pillar": "P2", "text": "Wildcard: answer the month's most-asked comment question (recurring slot)", "added": "2026-07-06", "status": "inbox", "notes": "", "emergency": false }
+    {
+      "id": "ims05vyc7gbyi",
+      "pillar": "P3",
+      "text": "Being torn as a mum - always feel in two minds about everything",
+      "added": "2026-07-25",
+      "status": "inbox",
+      "notes": "",
+      "caption": "",
+      "emergency": false
+    },
+    {
+      "id": "imrwyvzklub5y",
+      "pillar": "P2",
+      "text": "New idea about",
+      "added": "2026-07-23",
+      "status": "inbox",
+      "notes": "",
+      "caption": "",
+      "emergency": false
+    },
+    {
+      "id": "imrwyuatqwawb",
+      "pillar": "P2",
+      "text": "Test new idea",
+      "added": "2026-07-23",
+      "status": "inbox",
+      "notes": "",
+      "caption": "",
+      "emergency": false
+    },
+    {
+      "id": "imrvy158la65l",
+      "pillar": "P1",
+      "text": "Sacrifice between creating and sharing content. I was spending most of my time creating content instead of doing what I enjoy",
+      "added": "2026-07-22",
+      "status": "inbox",
+      "notes": "",
+      "caption": "",
+      "emergency": false
+    },
+    {
+      "id": "imrv8xkc3m3wh",
+      "pillar": "P4",
+      "text": "Planning and preparation pattern that was hindering my progress",
+      "added": "2026-07-22",
+      "status": "inbox",
+      "notes": "",
+      "caption": "",
+      "emergency": false
+    },
+    {
+      "id": "imrqq6u7yse08",
+      "pillar": "P2",
+      "text": "Here's what I realistically built in one nap session",
+      "added": "2026-07-19",
+      "status": "inbox",
+      "notes": "",
+      "caption": "",
+      "emergency": false
+    },
+    {
+      "id": "imrqq6dw1ciml",
+      "pillar": "P2",
+      "text": "Here's what I realistically built in one nap session",
+      "added": "2026-07-19",
+      "status": "used",
+      "notes": "",
+      "caption": "",
+      "emergency": false
+    },
+    {
+      "id": "imrpwa03tlix0",
+      "pillar": "P1",
+      "text": "What I’ll never give up to AI",
+      "added": "2026-07-18",
+      "status": "inbox",
+      "notes": "",
+      "caption": "",
+      "emergency": false
+    },
+    {
+      "id": "imreuk77gxeid",
+      "pillar": "P1",
+      "text": "The content decision",
+      "added": "2026-07-10",
+      "status": "scheduled",
+      "notes": "",
+      "caption": "",
+      "emergency": false
+    },
+    {
+      "id": "imrpc23pf8t4a",
+      "pillar": "P2",
+      "text": "product ideas for working mums",
+      "added": "2026-07-18",
+      "status": "inbox",
+      "notes": "",
+      "caption": "",
+      "emergency": false
+    },
+    {
+      "id": "imro3n9ib6cpc",
+      "pillar": "P3",
+      "text": "thanking the dads who support mums, who help out, who are there, who try to give us some time back too",
+      "added": "2026-07-17",
+      "status": "inbox",
+      "notes": "",
+      "caption": "",
+      "emergency": false
+    },
+    {
+      "id": "imrpc2ilzaxwm",
+      "pillar": "P2",
+      "text": "product ideas for working mums",
+      "added": "2026-07-18",
+      "status": "scheduled",
+      "notes": "",
+      "caption": "",
+      "emergency": false
+    },
+    {
+      "id": "imrft6v20592u",
+      "pillar": "P1",
+      "text": "I've got less than 6 months to be completely delusional and build something",
+      "added": "2026-07-11",
+      "status": "inbox",
+      "notes": "",
+      "caption": "",
+      "emergency": false
+    },
+    {
+      "id": "imrevyw3y0g7h",
+      "pillar": "P2",
+      "text": "Content creation system for time-poor mums (in 60 minutes a week)",
+      "added": "2026-07-10",
+      "status": "inbox",
+      "notes": "",
+      "caption": "",
+      "emergency": false
+    },
+    {
+      "id": "imrevpfob4cb0",
+      "pillar": "P3",
+      "text": "because if there wasn't the mess, the meal prep, the cooking, the cleaning, it means they aren't there anymore",
+      "added": "2026-07-10",
+      "status": "inbox",
+      "notes": "",
+      "caption": "",
+      "emergency": false
+    },
+    {
+      "id": "i04",
+      "pillar": "P1",
+      "text": "THESIS/POST #1: \"Corporate career that looks right on paper, feels wrong at 7am. I'm not quitting — here's what I'm doing instead\" — claims expertise, opens the series",
+      "added": "2026-07-05",
+      "status": "scheduled",
+      "notes": "",
+      "caption": "",
+      "emergency": false
+    },
+    {
+      "id": "imretleyt8j5e",
+      "pillar": "P3",
+      "text": "Becoming a parent has made me realise how i want to spend my time",
+      "added": "2026-07-10",
+      "status": "inbox",
+      "notes": "",
+      "caption": "",
+      "emergency": false
+    },
+    {
+      "id": "imreth6uz3qs3",
+      "pillar": "P1",
+      "text": "so im about to add one more impossible thing to the list - sharing this journey.  with working, looking after a toddler, cleaning, cooking, washing, maintaining a household, and trying to still live a life, there's only so much time.  Becoming a parent has made me realise how i want to spend my time..",
+      "added": "2026-07-10",
+      "status": "used",
+      "notes": "",
+      "caption": "",
+      "emergency": false
+    },
+    {
+      "id": "i01",
+      "pillar": "P1",
+      "text": "Why I'm still in my corporate job and building an AI creative career anyway — the expertise-claiming post",
+      "added": "2026-07-04",
+      "status": "inbox",
+      "notes": "",
+      "caption": "",
+      "emergency": false
+    },
+    {
+      "id": "i02",
+      "pillar": "P2",
+      "text": "The Claude-for-creatives series backlog (scripts already written pre-pivot) — mine these",
+      "added": "2026-07-04",
+      "status": "used",
+      "notes": "",
+      "caption": "",
+      "emergency": false
+    },
+    {
+      "id": "i03",
+      "pillar": "P2",
+      "text": "Film-camera style profile visuals — before/after generic AI vs taste-directed output",
+      "added": "2026-07-04",
+      "status": "inbox",
+      "notes": "",
+      "caption": "",
+      "emergency": false
+    },
+    {
+      "id": "i42",
+      "pillar": "P2",
+      "text": "How I used Claude to build my research engine ",
+      "added": "2026-07-07",
+      "status": "scheduled",
+      "notes": "",
+      "caption": "",
+      "emergency": false
+    },
+    {
+      "id": "i05",
+      "pillar": "P1",
+      "text": "\"I get 90 minutes a day. Here's the math.\" — pre-empts the #1 objection (easy for you), sets the constraint frame",
+      "added": "2026-07-05",
+      "status": "used",
+      "notes": "",
+      "caption": "",
+      "emergency": false
+    },
+    {
+      "id": "i06",
+      "pillar": "P2",
+      "text": "\"Made after bedtime. Took 11 minutes. Here's how.\" — one beautiful visual made inside the constraint, taught in 60s",
+      "added": "2026-07-05",
+      "status": "inbox",
+      "notes": "",
+      "caption": "",
+      "emergency": false
+    },
+    {
+      "id": "i07",
+      "pillar": "P1",
+      "text": "\"Is it still my work if AI helped? I've stopped asking — here's why\" — the most underserved question in the space, answered from practice",
+      "added": "2026-07-05",
+      "status": "inbox",
+      "notes": "",
+      "caption": "",
+      "emergency": false
+    },
+    {
+      "id": "i08",
+      "pillar": "P1",
+      "text": "\"My salary is my seed funding. Quitting would've killed this business.\" — contrarian, argument-starting, positions the account",
+      "added": "2026-07-05",
+      "status": "inbox",
+      "notes": "",
+      "caption": "",
+      "emergency": false
+    },
+    {
+      "id": "i09",
+      "pillar": "P1",
+      "text": "\"The career that looks right and feels wrong\" — name the dissonance of being GOOD at a job you're ambivalent about (the unoccupied middle between corporate-girlie romance and quit-porn)",
+      "added": "2026-07-05",
+      "status": "inbox",
+      "notes": "",
+      "caption": "",
+      "emergency": false
+    },
+    {
+      "id": "i10",
+      "pillar": "P4",
+      "text": "Permission-slip series: \"you're allowed to want more without hating what you have\" — quiet-ambition current, high save-rate",
+      "added": "2026-07-05",
+      "status": "inbox",
+      "notes": "",
+      "caption": "",
+      "emergency": true
+    },
+    {
+      "id": "i11",
+      "pillar": "P1",
+      "text": "\"I ran my career decision like a process safety review\" — engineer-brain meets creative work, unreplicable moat",
+      "added": "2026-07-05",
+      "status": "inbox",
+      "notes": "",
+      "caption": "",
+      "emergency": false
+    },
+    {
+      "id": "i12",
+      "pillar": "P2",
+      "text": "The 90-minute workflow series (recurring format) — real output inside a named time-box, start to finish, bedtime deadline assumed",
+      "added": "2026-07-05",
+      "status": "inbox",
+      "notes": "",
+      "caption": "",
+      "emergency": false
+    },
+    {
+      "id": "i13",
+      "pillar": "P2",
+      "text": "Taste teardowns: \"why this AI image is slop and this one isn't, in 60s\" — topic APPRECIATES as slop-fatigue grows (enthusiasm 60%→26%)",
+      "added": "2026-07-05",
+      "status": "used",
+      "notes": "",
+      "caption": "",
+      "emergency": false
+    },
+    {
+      "id": "i14",
+      "pillar": "P2",
+      "text": "\"You bring the taste, AI brings the speed\" — fix-the-slop before/afters (highest-completion format)",
+      "added": "2026-07-05",
+      "status": "inbox",
+      "notes": "",
+      "caption": "",
+      "emergency": false
+    },
+    {
+      "id": "i15",
+      "pillar": "P2",
+      "text": "The workflow-that-doesn't-go-stale angle — teach the thinking, name the tool second (answers #1 course regret)",
+      "added": "2026-07-05",
+      "status": "inbox",
+      "notes": "",
+      "caption": "",
+      "emergency": false
+    },
+    {
+      "id": "i16",
+      "pillar": "P1",
+      "text": "Time-poverty math, shown honestly — where the hours actually come from and what gets dropped",
+      "added": "2026-07-05",
+      "status": "inbox",
+      "notes": "",
+      "caption": "",
+      "emergency": false
+    },
+    {
+      "id": "i17",
+      "pillar": "P1",
+      "text": "Money honesty at small scale: \"month 2: $0. Here's why I'm still doing it\" — small true numbers out-trust big claimed ones in 2026",
+      "added": "2026-07-05",
+      "status": "inbox",
+      "notes": "",
+      "caption": "",
+      "emergency": false
+    },
+    {
+      "id": "i18",
+      "pillar": "P2",
+      "text": "Format engine idea: serialise everything as numbered episodes (\"Building this without quitting — day 12\") — a follow is the only way to see ep.13",
+      "added": "2026-07-05",
+      "status": "inbox",
+      "notes": "",
+      "caption": "",
+      "emergency": false
+    },
+    {
+      "id": "i19",
+      "pillar": "P2",
+      "text": "Portfolio pieces w/ one-line arc captions (\"made after bedtime, episode 23\") — visible proof of the claims made in the other pillars",
+      "added": "2026-07-05",
+      "status": "inbox",
+      "notes": "",
+      "caption": "",
+      "emergency": false
+    },
+    {
+      "id": "i20",
+      "pillar": "P4",
+      "text": "You're not competing with AI — you're competing with people who already started figuring it out",
+      "added": "2026-07-05",
+      "status": "inbox",
+      "notes": "",
+      "caption": "",
+      "emergency": true
+    },
+    {
+      "id": "i21",
+      "pillar": "P1",
+      "text": "\"Prompting\" is the wrong skill — it's creative direction, and you already have it",
+      "added": "2026-07-05",
+      "status": "inbox",
+      "notes": "",
+      "caption": "",
+      "emergency": false
+    },
+    {
+      "id": "i22",
+      "pillar": "P1",
+      "text": "AI doesn't level the playing field, it raises it — taste is the gap now",
+      "added": "2026-07-05",
+      "status": "inbox",
+      "notes": "",
+      "caption": "",
+      "emergency": false
+    },
+    {
+      "id": "i23",
+      "pillar": "P1",
+      "text": "\"I'm not technical\" isn't the barrier, taste is — I taught myself this at night, 10 years into corporate",
+      "added": "2026-07-05",
+      "status": "inbox",
+      "notes": "",
+      "caption": "",
+      "emergency": false
+    },
+    {
+      "id": "i24",
+      "pillar": "P1",
+      "text": "\"AI is just a tool\" is the lazy take — it's a tool the way a darkroom is; the eye still does the work",
+      "added": "2026-07-05",
+      "status": "inbox",
+      "notes": "",
+      "caption": "",
+      "emergency": false
+    },
+    {
+      "id": "i25",
+      "pillar": "P1",
+      "text": "Everyone's obsessed with how fast AI is — when you're time-poor the real gift is iterating for free until it's right",
+      "added": "2026-07-05",
+      "status": "inbox",
+      "notes": "",
+      "caption": "",
+      "emergency": false
+    },
+    {
+      "id": "i26",
+      "pillar": "P1",
+      "text": "Generating one good image isn't the skill — twenty that look like the same shoot is",
+      "added": "2026-07-05",
+      "status": "inbox",
+      "notes": "",
+      "caption": "",
+      "emergency": false
+    },
+    {
+      "id": "i27",
+      "pillar": "P2",
+      "text": "My 3-step framework for consistent AI images",
+      "added": "2026-07-05",
+      "status": "inbox",
+      "notes": "",
+      "caption": "",
+      "emergency": false
+    },
+    {
+      "id": "i28",
+      "pillar": "P2",
+      "text": "Stop typing prompts and hoping — write a brief. The 5 things I put in every one",
+      "added": "2026-07-05",
+      "status": "inbox",
+      "notes": "",
+      "caption": "",
+      "emergency": false
+    },
+    {
+      "id": "i29",
+      "pillar": "P2",
+      "text": "My actual toolkit — what I really use, built around an hour here and there, not a studio",
+      "added": "2026-07-05",
+      "status": "inbox",
+      "notes": "",
+      "caption": "",
+      "emergency": false
+    },
+    {
+      "id": "i30",
+      "pillar": "P2",
+      "text": "The prompt structure I use for interiors (my aesthetic)",
+      "added": "2026-07-05",
+      "status": "used",
+      "notes": "",
+      "caption": "",
+      "emergency": false
+    },
+    {
+      "id": "i31",
+      "pillar": "P2",
+      "text": "What I check before an image is \"done\" and I'll actually post it",
+      "added": "2026-07-05",
+      "status": "inbox",
+      "notes": "",
+      "caption": "",
+      "emergency": false
+    },
+    {
+      "id": "i32",
+      "pillar": "P2",
+      "text": "Build a style reference before you prompt — the one step that changes everything (← product candidate)",
+      "added": "2026-07-05",
+      "status": "inbox",
+      "notes": "",
+      "caption": "",
+      "emergency": false
+    },
+    {
+      "id": "i33",
+      "pillar": "P2",
+      "text": "The 20% I do after AI generates — where the taste actually goes in",
+      "added": "2026-07-05",
+      "status": "inbox",
+      "notes": "",
+      "caption": "",
+      "emergency": false
+    },
+    {
+      "id": "i34",
+      "pillar": "P4",
+      "text": "My worst AI month — everything looked mediocre. What I actually learned",
+      "added": "2026-07-05",
+      "status": "inbox",
+      "notes": "",
+      "caption": "",
+      "emergency": false
+    },
+    {
+      "id": "i35",
+      "pillar": "P2",
+      "text": "When the AI output is genuinely bad — how I fix it, in real time",
+      "added": "2026-07-05",
+      "status": "inbox",
+      "notes": "",
+      "caption": "",
+      "emergency": false
+    },
+    {
+      "id": "i36",
+      "pillar": "P2",
+      "text": "One prompt, 60 seconds — and here's the actual prompt",
+      "added": "2026-07-05",
+      "status": "inbox",
+      "notes": "",
+      "caption": "",
+      "emergency": false
+    },
+    {
+      "id": "i37",
+      "pillar": "P2",
+      "text": "I tested 5 AI image tools — the honest ranking",
+      "added": "2026-07-05",
+      "status": "inbox",
+      "notes": "",
+      "caption": "",
+      "emergency": false
+    },
+    {
+      "id": "i38",
+      "pillar": "P2",
+      "text": "Pinterest screenshot → my render, in under a minute",
+      "added": "2026-07-05",
+      "status": "inbox",
+      "notes": "",
+      "caption": "",
+      "emergency": false
+    },
+    {
+      "id": "i73",
+      "pillar": "P1",
+      "text": "\"Career-confused isn't a crisis. It's a signal.\" — reframe the 30s career wobble as information, not failure — format: talking-head",
+      "added": "2026-07-07",
+      "status": "scheduled",
+      "notes": "",
+      "caption": "",
+      "emergency": false
+    },
+    {
+      "id": "i40",
+      "pillar": "P3",
+      "text": "\"Mum first\" but \"this is my thing\" — holding both identities without apologising for either",
+      "added": "2026-07-07",
+      "status": "inbox",
+      "notes": "",
+      "caption": "",
+      "emergency": false
+    },
+    {
+      "id": "i41",
+      "pillar": "P3",
+      "text": "Day in the life — near-full-time working mum building the side thing (recurring arc-carrier format)",
+      "added": "2026-07-07",
+      "status": "inbox",
+      "notes": "",
+      "caption": "",
+      "emergency": false
+    },
+    {
+      "id": "imrny0cuv4gp4",
+      "pillar": "P2",
+      "text": "how i edited my video using AI only, including captions",
+      "added": "2026-07-17",
+      "status": "scheduled",
+      "notes": "",
+      "caption": "",
+      "emergency": false
+    },
+    {
+      "id": "i43",
+      "pillar": "P3",
+      "text": "Mums don't have a 5-9 after the 9-5 — they have an 8-5. That leaves about 90 minutes a day. (sharper hook variant of the ★ 90-minutes-math post)",
+      "added": "2026-07-07",
+      "status": "used",
+      "notes": "",
+      "caption": "",
+      "emergency": false
+    },
+    {
+      "id": "i44",
+      "pillar": "P1",
+      "text": "Raw opening hook: \"I'm a near-full-time working mum of a toddler under 2, about to add one more impossible thing to the list — sharing this journey\"",
+      "added": "2026-07-07",
+      "status": "used",
+      "notes": "",
+      "caption": "",
+      "emergency": false
+    },
+    {
+      "id": "i45",
+      "pillar": "P2",
+      "text": "How AI saves my sanity as a near-full-time working mum",
+      "added": "2026-07-07",
+      "status": "inbox",
+      "notes": "",
+      "caption": "",
+      "emergency": false
+    },
+    {
+      "id": "i46",
+      "pillar": "P4",
+      "text": "The mission post: for the mums and millennials who are meant for something different — showing you can do it without sacrificing what matters",
+      "added": "2026-07-07",
+      "status": "inbox",
+      "notes": "",
+      "caption": "",
+      "emergency": false
+    },
+    {
+      "id": "i47",
+      "pillar": "P1",
+      "text": "Becoming a mum changed what I value — agency, time with family, purpose, sense of self. That reordering is WHY I'm building this",
+      "added": "2026-07-07",
+      "status": "used",
+      "notes": "",
+      "caption": "",
+      "emergency": false
+    },
+    {
+      "id": "i48",
+      "pillar": "P3",
+      "text": "Finding your sense of self again after becoming a mum — the creative work as the way back to \"me\"",
+      "added": "2026-07-07",
+      "status": "inbox",
+      "notes": "",
+      "caption": "",
+      "emergency": false
+    },
+    {
+      "id": "i49",
+      "pillar": "P3",
+      "text": "Not meeting my own high expectations — realism and self-forgiveness while building (likely a beat inside other posts, not standalone)",
+      "added": "2026-07-07",
+      "status": "inbox",
+      "notes": "",
+      "caption": "",
+      "emergency": false
+    },
+    {
+      "id": "i50",
+      "pillar": "P1",
+      "text": "It's no longer just about me — the bigger goal behind the building (family, future)",
+      "added": "2026-07-07",
+      "status": "inbox",
+      "notes": "",
+      "caption": "",
+      "emergency": false
+    },
+    {
+      "id": "i51",
+      "pillar": "P4",
+      "text": "To the women who want both: time with family AND independence — choosing your own destiny while being the primary caretaker",
+      "added": "2026-07-07",
+      "status": "inbox",
+      "notes": "",
+      "caption": "",
+      "emergency": false
+    },
+    {
+      "id": "i52",
+      "pillar": "P2",
+      "text": "How I actually create content around full-time work and family — the honest process, and where AI carries it",
+      "added": "2026-07-07",
+      "status": "inbox",
+      "notes": "",
+      "caption": "",
+      "emergency": false
+    },
+    {
+      "id": "i53",
+      "pillar": "P1",
+      "text": "Do I think AI makes someone more creative? — answered from practice, not hype",
+      "added": "2026-07-07",
+      "status": "used",
+      "notes": "",
+      "caption": "",
+      "emergency": false
+    },
+    {
+      "id": "i54",
+      "pillar": "P4",
+      "text": "The price tag for the person I want to become and the future I want to lead — what building this actually costs",
+      "added": "2026-07-07",
+      "status": "inbox",
+      "notes": "",
+      "caption": "",
+      "emergency": false
+    },
+    {
+      "id": "i55",
+      "pillar": "P1",
+      "text": "The expertise-claiming post — engineer → AI creative, why I want to teach this",
+      "added": "2026-07-06",
+      "status": "inbox",
+      "notes": "",
+      "caption": "",
+      "emergency": false
+    },
+    {
+      "id": "i56",
+      "pillar": "P2",
+      "text": "Series 1: generic AI results — the context fix",
+      "added": "2026-07-06",
+      "status": "inbox",
+      "notes": "",
+      "caption": "",
+      "emergency": false
+    },
+    {
+      "id": "i57",
+      "pillar": "P2",
+      "text": "Series 2 as carousel: context — what it actually is, 5 slides",
+      "added": "2026-07-06",
+      "status": "inbox",
+      "notes": "",
+      "caption": "",
+      "emergency": false
+    },
+    {
+      "id": "i58",
+      "pillar": "P1",
+      "text": "The decision: posting daily for 6 months, part-time, around my family — the trade-off",
+      "added": "2026-07-06",
+      "status": "inbox",
+      "notes": "",
+      "caption": "",
+      "emergency": false
+    },
+    {
+      "id": "i59",
+      "pillar": "P1",
+      "text": "\"Feeling behind on AI\" is a marketing story someone sold you",
+      "added": "2026-07-06",
+      "status": "inbox",
+      "notes": "",
+      "caption": "",
+      "emergency": false
+    },
+    {
+      "id": "i60",
+      "pillar": "P2",
+      "text": "5 signs your AI results are generic (and the one fix for all of them)",
+      "added": "2026-07-06",
+      "status": "inbox",
+      "notes": "",
+      "caption": "",
+      "emergency": false
+    },
+    {
+      "id": "i61",
+      "pillar": "P1",
+      "text": "The amateur fear: nobody can tell you used AI when you use it with taste",
+      "added": "2026-07-06",
+      "status": "inbox",
+      "notes": "",
+      "caption": "",
+      "emergency": false
+    },
+    {
+      "id": "i62",
+      "pillar": "P1",
+      "text": "Why I stopped chasing every new AI tool (and what I do instead)",
+      "added": "2026-07-06",
+      "status": "inbox",
+      "notes": "",
+      "caption": "",
+      "emergency": false
+    },
+    {
+      "id": "i63",
+      "pillar": "P1",
+      "text": "One sentence that changes how you use AI — pull the best line from this week's experiment (recurring slot)",
+      "added": "2026-07-06",
+      "status": "inbox",
+      "notes": "",
+      "caption": "",
+      "emergency": false
+    },
+    {
+      "id": "i64",
+      "pillar": "P1",
+      "text": "3 weeks of daily posting — what the data says vs what it felt like",
+      "added": "2026-07-06",
+      "status": "inbox",
+      "notes": "",
+      "caption": "",
+      "emergency": false
+    },
+    {
+      "id": "i65",
+      "pillar": "P1",
+      "text": "A real week in the freedom-led business — decisions, not highlight reel",
+      "added": "2026-07-06",
+      "status": "inbox",
+      "notes": "",
+      "caption": "",
+      "emergency": false
+    },
+    {
+      "id": "i66",
+      "pillar": "P1",
+      "text": "Best-performing take of the month, expanded (data-driven slot — fill once posts are live)",
+      "added": "2026-07-06",
+      "status": "inbox",
+      "notes": "",
+      "caption": "",
+      "emergency": false
+    },
+    {
+      "id": "i67",
+      "pillar": "P2",
+      "text": "Month-1 portfolio compilation — everything made in 30 days",
+      "added": "2026-07-06",
+      "status": "inbox",
+      "notes": "",
+      "caption": "",
+      "emergency": false
+    },
+    {
+      "id": "i68",
+      "pillar": "P1",
+      "text": "Wildcard: double down on the month's best-performing hook pattern (recurring slot)",
+      "added": "2026-07-06",
+      "status": "inbox",
+      "notes": "",
+      "caption": "",
+      "emergency": false
+    },
+    {
+      "id": "i69",
+      "pillar": "P2",
+      "text": "Wildcard: answer the month's most-asked comment question (recurring slot)",
+      "added": "2026-07-06",
+      "status": "inbox",
+      "notes": "",
+      "caption": "",
+      "emergency": false
+    },
+    {
+      "id": "i70",
+      "pillar": "P1",
+      "text": "\"On paper I'd made it — well paid, well-positioned, and deeply unhappy.\" The made-it-and-miserable post: mid-career success that didn't convert to satisfaction, and the recalibration that isn't a resignation — format: talking-head",
+      "added": "2026-07-07",
+      "status": "inbox",
+      "notes": "",
+      "caption": "",
+      "emergency": false
+    },
+    {
+      "id": "i71",
+      "pillar": "P1",
+      "text": "The real question isn't how my career looks — it's how my days feel (real phrase: \"how she wants her days to feel, not just how her career appears on paper\") — format: text-on-screen",
+      "added": "2026-07-07",
+      "status": "inbox",
+      "notes": "",
+      "caption": "",
+      "emergency": false
+    },
+    {
+      "id": "i72",
+      "pillar": "P4",
+      "text": "I climbed the whole ladder and reached the top tired — success ≠ satisfaction, and you can redirect the energy without handing in your notice — format: voiceover over b-roll",
+      "added": "2026-07-07",
+      "status": "inbox",
+      "notes": "",
+      "caption": "",
+      "emergency": false
+    },
+    {
+      "id": "i39",
+      "pillar": "P3",
+      "text": "Juggling motherhood, a corporate job and a side hustle — why this matters to me, not just what I do",
+      "added": "2026-07-07",
+      "status": "scheduled",
+      "notes": "",
+      "caption": "",
+      "emergency": false
+    },
+    {
+      "id": "i74",
+      "pillar": "P1",
+      "text": "Midcareer anxiety peaks in your 30s — mine did. I didn't resign, I built a lane in the 90 minutes the job doesn't use — format: talking-head",
+      "added": "2026-07-07",
+      "status": "inbox",
+      "notes": "",
+      "caption": "",
+      "emergency": false
+    },
+    {
+      "id": "i75",
+      "pillar": "P1",
+      "text": "Everyone hands you a binary — follow your passion OR stay safe. I'm doing both, imperfectly, at the same time, and that IS the plan — format: talking-head",
+      "added": "2026-07-07",
+      "status": "inbox",
+      "notes": "",
+      "caption": "",
+      "emergency": false
+    },
+    {
+      "id": "i76",
+      "pillar": "P2",
+      "text": "The corporate skill that transfers straight to a side build: I project-manage it like a work deliverable — scope, sprints, done-beats-perfect — format: carousel",
+      "added": "2026-07-07",
+      "status": "inbox",
+      "notes": "",
+      "caption": "",
+      "emergency": false
+    },
+    {
+      "id": "i77",
+      "pillar": "P1",
+      "text": "\"What if it doesn't work?\" Then I still have the job — that's the entire point of not quitting. Staying is the risk management, not the cowardice — format: talking-head",
+      "added": "2026-07-07",
+      "status": "inbox",
+      "notes": "",
+      "caption": "",
+      "emergency": false
+    },
+    {
+      "id": "i78",
+      "pillar": "P2",
+      "text": "\"Time blocking often fails for busy women because it assumes your day will unfold exactly as planned\" — it never does, so I batch instead of scheduling — format: talking-head",
+      "added": "2026-07-24",
+      "status": "inbox",
+      "notes": "",
+      "caption": "",
+      "emergency": false
+    },
+    {
+      "id": "i79",
+      "pillar": "P2",
+      "text": "Switching between tasks can eat up to 40% of your productive time — the engineering case for batching everything instead of multitasking — format: carousel",
+      "added": "2026-07-24",
+      "status": "inbox",
+      "notes": "",
+      "caption": "",
+      "emergency": false
+    },
+    {
+      "id": "i80",
+      "pillar": "P4",
+      "text": "Your first content batch always takes longer — \"you are building the system while doing the work\" — batch 4 is where it gets fast, not batch 1 — format: voiceover over b-roll (messy batch 1 vs efficient batch 4)",
+      "added": "2026-07-24",
+      "status": "inbox",
+      "notes": "",
+      "caption": "",
+      "emergency": false
+    },
+    {
+      "id": "i81",
+      "pillar": "P2",
+      "text": "When everything feels important, nothing is — the one-task rule I use to pick what actually gets my 90 minutes — format: talking-head",
+      "added": "2026-07-24",
+      "status": "inbox",
+      "notes": "",
+      "caption": "",
+      "emergency": false
+    },
+    {
+      "id": "i82",
+      "pillar": "P2",
+      "text": "I run a night-before system on my side business, not just the kids lunchboxes — 5 minutes that kills tomorrows decision fatigue — format: before/after, text-on-screen",
+      "added": "2026-07-24",
+      "status": "inbox",
+      "notes": "",
+      "caption": "",
+      "emergency": false
+    },
+    {
+      "id": "i83",
+      "pillar": "P2",
+      "text": "I run my weekly content batch like a process safety review — find the failure point before it happens, not after — format: talking-head",
+      "added": "2026-07-24",
+      "status": "inbox",
+      "notes": "",
+      "caption": "",
+      "emergency": false
+    },
+    {
+      "id": "i84",
+      "pillar": "P4",
+      "text": "Batching isnt about discipline, its about not relying on willpower you wont have at 8pm — format: talking-head, contrarian",
+      "added": "2026-07-24",
+      "status": "inbox",
+      "notes": "",
+      "caption": "",
+      "emergency": false
+    },
+    {
+      "id": "i85",
+      "pillar": "P1",
+      "text": "The gap between 'peaceful side hustle' guru content and reality - every gumroad guide promises a 'no burnout, no audience, 2 hours a week' digital product business. I'm showing what actually earned money vs what was a $27 PDF pretending to be a shortcut. Real numbers, real hours. — format: talking-head",
+      "added": "2026-07-26",
+      "status": "inbox",
+      "notes": "",
+      "caption": "",
+      "emergency": false
+    },
+    {
+      "id": "i86",
+      "pillar": "P3",
+      "text": "The mum-guilt trade-off nobody names out loud: working parents online say they're 'torn between working evenings/weekends on side projects or spending time with family.' I don't resolve it, I just show which hours I actually protect and which ones I gave up. — format: voiceover",
+      "added": "2026-07-26",
+      "status": "inbox",
+      "notes": "",
+      "caption": "",
+      "emergency": false
+    },
+    {
+      "id": "i87",
+      "pillar": "P1",
+      "text": "Digital product listings keep selling 'passive income while they nap' - so I timed how long my last digital product actually took to build, launch and sell one unit. It's not passive, it's front-loaded. Here's the real hour count. — format: before-after",
+      "added": "2026-07-26",
+      "status": "inbox",
+      "notes": "",
+      "caption": "",
+      "emergency": false
+    },
+    {
+      "id": "i88",
+      "pillar": "P1",
+      "text": "There's a whole genre of 'M.O.M. side hustle method' content selling the idea that any mum's life experience is instantly monetisable. It isn't - mine took a specific skill (systems thinking from engineering) plus 18 months of unglamorous reps. Naming what the guru version skips. — format: talking-head",
+      "added": "2026-07-26",
+      "status": "inbox",
+      "notes": "",
+      "caption": "",
+      "emergency": false
+    },
+    {
+      "id": "i89",
+      "pillar": "P1",
+      "text": "The market shift from hustle-culture side income content to 'anti-hustle'/'calm income' framing is loud right now, but most of it is the same advice with softer words. Here's the one process change (not a mindset shift) that actually cut my side-project hours. — format: carousel",
+      "added": "2026-07-26",
+      "status": "inbox",
+      "notes": "",
+      "caption": "",
+      "emergency": false
+    },
+    {
+      "id": "i90",
+      "pillar": "P1",
+      "text": "'Make money while they nap' is the pitch on every mum side-hustle guide right now - constraint marker: nap time is 45 minutes, not a business plan. What I actually build in a real 45-minute block vs what the guide assumes I have. — format: screen demo",
+      "added": "2026-07-26",
+      "status": "inbox",
+      "notes": "",
+      "caption": "",
+      "emergency": false
+    },
+    {
+      "id": "i91",
+      "pillar": "P1",
+      "text": "Side hustle guides sell '2 hours a week using AI tools' like it's a settled fact. Mine takes closer to 6, and the other 4 are the unsexy parts (fulfilment, customer questions, fixing what AI got wrong) nobody screenshots. Saying the quiet part about time cost out loud. — format: text-on-screen",
+      "added": "2026-07-26",
+      "status": "inbox",
+      "notes": "",
+      "caption": "",
+      "emergency": false
+    }
   ],
   "week": [
-    { "day": 1, "ideaId": "i44", "pillar": "P1", "format": "TH", "title": "The opener — \"I'm a near-full-time working mum of a toddler under 2, about to add one more impossible thing to the list — sharing this journey\"", "stage": "planned", "postedDate": null, "notes": "" },
-    { "day": 2, "ideaId": "i53", "pillar": "P1", "format": "TH", "title": "Do I think AI makes someone more creative? — POV post, answered from practice", "stage": "planned", "postedDate": null, "notes": "" },
-    { "day": 3, "ideaId": "i43", "pillar": "P3", "format": "text", "title": "Mums don't have a 5–9 after the 9–5 — they have an 8–5. That leaves about 90 minutes a day", "stage": "planned", "postedDate": null, "notes": "" },
-    { "day": 4, "ideaId": null, "pillar": "P2", "format": "SD", "title": "Here's what I realistically built in one nap-time session", "stage": "planned", "postedDate": null, "notes": "" },
-    { "day": 5, "ideaId": "i47", "pillar": "P3", "format": "TH", "title": "Becoming a mum changed what I value — agency, time with family, purpose, sense of self. That reordering is WHY I'm building this", "stage": "planned", "postedDate": null, "notes": "" },
-    { "day": 6, "ideaId": null, "pillar": "P3", "format": "TH", "title": "To all the other working mums — I feel you, I want to be with my family too", "stage": "planned", "postedDate": null, "notes": "" },
-    { "day": 7, "ideaId": null, "pillar": "P2", "format": "BA", "title": "\"A new AI model dropped this week and everyone's telling you you're behind. You're not.\" — Fable 5 experiment through taste + the constraint. Closes the loop on day 3", "stage": "planned", "postedDate": null, "notes": "" }
+    {
+      "day": 1,
+      "ideaId": "imreuk77gxeid",
+      "pillar": "P1",
+      "format": "TH",
+      "title": "The content decision",
+      "stage": "posted",
+      "postedDate": null,
+      "notes": "",
+      "caption": ""
+    },
+    {
+      "day": 2,
+      "ideaId": "imrpc2ilzaxwm",
+      "pillar": "P2",
+      "format": "TH",
+      "title": "product ideas for working mums",
+      "stage": "scripted",
+      "postedDate": null,
+      "notes": "",
+      "caption": ""
+    },
+    {
+      "day": 3,
+      "ideaId": "i04",
+      "pillar": "P1",
+      "format": "TH",
+      "title": "THESIS/POST #1: \"Corporate career that looks right on paper, feels wrong at 7am. I'm not quitting — here's what I'm doing instead\" — claims expertise, opens the series",
+      "stage": "planned",
+      "postedDate": null,
+      "notes": "",
+      "caption": ""
+    },
+    {
+      "day": 4,
+      "ideaId": "i42",
+      "pillar": "P2",
+      "format": "TH",
+      "title": "How I used Claude to build my research engine ",
+      "stage": "planned",
+      "postedDate": null,
+      "notes": "",
+      "caption": ""
+    },
+    {
+      "day": 5,
+      "ideaId": "imrny0cuv4gp4",
+      "pillar": "P2",
+      "format": "SD",
+      "title": "how i edited my video using AI only, including captions",
+      "stage": "planned",
+      "postedDate": null,
+      "notes": "",
+      "caption": ""
+    },
+    {
+      "day": 6,
+      "ideaId": "i73",
+      "pillar": "P1",
+      "format": "TH",
+      "title": "\"Career-confused isn't a crisis. It's a signal.\" ",
+      "stage": "planned",
+      "postedDate": null,
+      "notes": "",
+      "caption": ""
+    },
+    {
+      "day": 7,
+      "ideaId": "i39",
+      "pillar": "P3",
+      "format": "text",
+      "title": "To the supportive dads- who are there for the mums, and who also just want more time with their kids",
+      "stage": "planned",
+      "postedDate": null,
+      "notes": "",
+      "caption": ""
+    }
   ]
 }</script>
 <script>
@@ -419,20 +1515,24 @@ const LS_DATA = 'ce_data', LS_CFG = 'ce_cfg', LS_DIRTY = 'ce_dirty';
 const STAGES = ['planned','scripted','filmed','edited','scheduled','posted'];
 const FORMATS = ['TH','VO','SD','BA','carousel','text'];
 const FMT_LABEL = {TH:'talking-head', VO:'voiceover', SD:'screen demo', BA:'before/after', carousel:'carousel', text:'text-on-screen'};
-const PILLAR_NAME = {P1:'Perspective', P2:'Teaching', P3:'Freedom life', P4:'The work'};
+const PILLAR_NAME = {P1:'Opinion', P2:'Teaching', P3:'Story', P4:'Motivation'};
 
 let data = null;
 let cfg = JSON.parse(localStorage.getItem(LS_CFG) || 'null');
 let remoteSha = null;
 let syncTimer = null;
 let ideaFilter = 'all';
-let notesTarget = null;   // {kind:'week', idx} | {kind:'idea', id}
+let notesTarget = null;   // {kind:'week', idx} | {kind:'idea', id} — plus field:'notes'(script)|'caption'
+const FIELD_META = {
+  notes:   { title:'Script',  ph:'Script thoughts, hook lines, b-roll to grab…' },
+  caption: { title:'Caption', ph:'Caption + 3–5 hashtags — born with the script, never a separate task…' }
+};
 
 const PILLARS = ['P1','P2','P3','P4'];
 const pillarOptions = cur => PILLARS.map(p=>`<option value="${p}" ${cur===p?'selected':''}>${p}</option>`).join('');
 const fmtOptions = cur => FORMATS.map(f=>`<option value="${f}" ${cur===f?'selected':''}>${FMT_LABEL[f]}</option>`).join('');
 const clip = s => s.length>70 ? s.slice(0,70)+'…' : s;
-function isNotesTarget(kind, idx, id){ return !!notesTarget && notesTarget.kind===kind && notesTarget.idx===idx && notesTarget.id===id; }
+function isNotesTarget(kind, idx, id, field){ return !!notesTarget && notesTarget.kind===kind && notesTarget.idx===idx && notesTarget.id===id && notesTarget.field===(field||'notes'); }
 
 const $ = s => document.querySelector(s);
 const todayStr = () => new Date().toLocaleDateString('en-CA');
@@ -586,7 +1686,8 @@ function renderWeek(){
         <div class="stepper">${STAGES.map(st=>`<button data-stage="${idx}|${st}" class="${STAGES.indexOf(st)<=STAGES.indexOf(s.stage)?'on':''}">${st}</button>`).join('')}</div>
         <div class="dc-foot">
           <label><input type="checkbox" data-posted="${idx}" ${s.stage==='posted'?'checked':''}> posted</label>
-          <button class="linkbtn ${isNotesTarget('week',idx)?'on':''}" data-slotnotes="${idx}">notes${s.notes?' •':''}</button>
+          <button class="linkbtn ${isNotesTarget('week',idx,undefined,'notes')?'on':''}" data-slotnotes="${idx}">script${s.notes?' •':''}</button>
+          <button class="linkbtn ${isNotesTarget('week',idx,undefined,'caption')?'on':''}" data-slotcap="${idx}">caption${s.caption?' •':''}</button>
         </div>
       </div>
     </div>`).join('');
@@ -614,14 +1715,15 @@ function renderIdeas(){
       <span class="chip ${i.pillar}">${i.pillar}</span>
       <div class="body">
         <div class="txt">${esc(i.text)}</div>
-        <div class="meta">${i.added}${i.status==='shortlist'?' · <span style="color:var(--accent)">shortlisted</span>':''}${i.status==='scheduled'?' · <span style="color:var(--green)">this week</span>':''}${i.status==='used'?' · used':''}${i.notes?' · <span style="color:var(--accent)">notes •</span>':''}</div>
+        <div class="meta">${i.added}${i.status==='shortlist'?' · <span style="color:var(--accent)">shortlisted</span>':''}${i.status==='scheduled'?' · <span style="color:var(--green)">this week</span>':''}${i.status==='used'?' · used':''}${i.notes?' · <span style="color:var(--accent)">script •</span>':''}${i.caption?' · <span style="color:var(--accent)">caption •</span>':''}</div>
       </div>
       <div class="acts">
         ${i.status==='used'
           ? `<button data-restore="${i.id}" title="Restore">↩</button>`
           : `<button data-star="${i.id}" class="${i.status==='shortlist'?'on':''}" title="Shortlist for next week">★</button>
              <button data-em="${i.id}" class="${i.emergency?'on em':''}" title="Emergency-ready (low effort)">⚡</button>
-             <button class="${isNotesTarget('idea',undefined,i.id)?'on':''}" data-ideanotes="${i.id}" title="Notes">✎</button>
+             <button class="${isNotesTarget('idea',undefined,i.id,'notes')?'on':''}" data-ideanotes="${i.id}" title="Script">✎</button>
+             <button class="${isNotesTarget('idea',undefined,i.id,'caption')?'on':''}" data-ideacap="${i.id}" title="Caption">💬</button>
              <button data-arch="${i.id}" title="Archive">✕</button>`}
       </div>
     </div>`;
@@ -658,7 +1760,8 @@ function renderShortlist(){
         </div>
         <div class="dc-title" contenteditable="plaintext-only" data-sltitle="${i.id}" data-ph="Edit idea…">${esc(i.text)}</div>
         <div class="dc-foot">
-          <button class="linkbtn ${isNotesTarget('idea',undefined,i.id)?'on':''}" data-ideanotes="${i.id}">notes${i.notes?' •':''}</button>
+          <button class="linkbtn ${isNotesTarget('idea',undefined,i.id,'notes')?'on':''}" data-ideanotes="${i.id}">script${i.notes?' •':''}</button>
+          <button class="linkbtn ${isNotesTarget('idea',undefined,i.id,'caption')?'on':''}" data-ideacap="${i.id}">caption${i.caption?' •':''}</button>
           <button class="linkbtn" data-unstar="${i.id}" title="Remove from shortlist">✕ remove</button>
         </div>
       </div>
@@ -691,7 +1794,7 @@ function swapIntoDay(ideaId, idx){
   if(s.ideaId){ const old=data.ideas.find(x=>x.id===s.ideaId); if(old && old.status==='scheduled') old.status='inbox'; }
   s.ideaId=idea.id; s.title=idea.text; s.pillar=idea.pillar;
   s.format = idea.pillar==='P2' || /carousel/i.test(idea.text) ? 'carousel' : 'text';
-  s.stage='planned'; s.postedDate=null; idea.status='scheduled';
+  s.stage='planned'; s.postedDate=null; s.notes=idea.notes||''; s.caption=idea.caption||''; idea.status='scheduled';
   saveLocal(); renderAll(); toast(`Swapped into Day ${idx+1} — streak-saver ready`);
 }
 
@@ -715,8 +1818,8 @@ function startNewWeek(){
   const unpinned = fresh.filter(i => !Object.values(byDay).includes(i));
   for(let d=1; d<=7; d++){
     let idea = byDay[d] || unpinned.shift() || null;
-    slots.push(idea ? { day:d, ideaId:idea.id, pillar:idea.pillar, format:idea.nextFormat||'TH', title:idea.text, stage:'planned', postedDate:null, notes:idea.notes||'' }
-                    : { day:d, ideaId:null, pillar:'P1', format:'TH', title:'', stage:'planned', postedDate:null, notes:'' });
+    slots.push(idea ? { day:d, ideaId:idea.id, pillar:idea.pillar, format:idea.nextFormat||'TH', title:idea.text, stage:'planned', postedDate:null, notes:idea.notes||'', caption:idea.caption||'' }
+                    : { day:d, ideaId:null, pillar:'P1', format:'TH', title:'', stage:'planned', postedDate:null, notes:'', caption:'' });
     if(idea){ idea.status='scheduled'; delete idea.nextDay; }
   }
   data.week = slots;
@@ -780,8 +1883,10 @@ document.addEventListener('click', e => {
     [data.ideas[a], data.ideas[b]] = [data.ideas[b], data.ideas[a]];
     saveLocal(); renderIdeas(); renderShortlist(); return;
   }
-  if(t.dataset.slotnotes !== undefined){ openNotes({kind:'week', idx:+t.dataset.slotnotes}); return; }
-  if(t.dataset.ideanotes !== undefined){ openNotes({kind:'idea', id:t.dataset.ideanotes}); return; }
+  if(t.dataset.slotnotes !== undefined){ openNotes({kind:'week', idx:+t.dataset.slotnotes, field:'notes'}); return; }
+  if(t.dataset.slotcap !== undefined){ openNotes({kind:'week', idx:+t.dataset.slotcap, field:'caption'}); return; }
+  if(t.dataset.ideanotes !== undefined){ openNotes({kind:'idea', id:t.dataset.ideanotes, field:'notes'}); return; }
+  if(t.dataset.ideacap !== undefined){ openNotes({kind:'idea', id:t.dataset.ideacap, field:'caption'}); return; }
   if(t.id==='ndClose'){ closeNotes(); return; }
   if(t.dataset.slstar){ const i=data.ideas.find(x=>x.id===t.dataset.slstar); if(i){ i.status='shortlist'; saveLocal(); renderAll(); toast('Added to shortlist'); } return; }
 
@@ -867,8 +1972,9 @@ document.addEventListener('input', e => {
   if(t.dataset.wtitle !== undefined){ data.week[+t.dataset.wtitle].title=t.textContent; debSave(); return; }
   if(t.dataset.sltitle !== undefined){ const i=data.ideas.find(x=>x.id===t.dataset.sltitle); if(i) i.text=t.textContent; debSave(); return; }
   if(t.id==='ndText' && notesTarget){
-    if(notesTarget.kind==='week'){ data.week[notesTarget.idx].notes=t.value; }
-    else { const i=data.ideas.find(x=>x.id===notesTarget.id); if(i) i.notes=t.value; }
+    const f = notesTarget.field || 'notes';
+    if(notesTarget.kind==='week'){ data.week[notesTarget.idx][f]=t.value; }
+    else { const i=data.ideas.find(x=>x.id===notesTarget.id); if(i) i[f]=t.value; }
     debSave();
   }
 });
@@ -878,13 +1984,16 @@ let debTimer=null;
 function debSave(){ clearTimeout(debTimer); debTimer=setTimeout(saveLocal, 800); }
 
 function openNotes(target){
-  if(isNotesTarget(target.kind, target.idx, target.id)){ closeNotes(); return; }
+  if(isNotesTarget(target.kind, target.idx, target.id, target.field)){ closeNotes(); return; }
   notesTarget = target;
+  const fm = FIELD_META[target.field || 'notes'];
+  $('#ndTitle').textContent = fm.title;
+  $('#ndText').placeholder = fm.ph;
   let obj, sub;
   if(target.kind==='week'){ obj=data.week[target.idx]; const ti=(obj.title||'').replace(/\s+/g,' ').trim() || 'empty slot'; sub=`Day ${target.idx+1} · ${clip(ti)}`; }
   else { obj=data.ideas.find(x=>x.id===target.id); if(!obj){ notesTarget=null; return; } sub=`${obj.pillar} idea · ${clip(obj.text)}`; }
   $('#ndSub').textContent = sub;
-  $('#ndText').value = obj.notes || '';
+  $('#ndText').value = obj[target.field || 'notes'] || '';
   $('#notesDrawer').classList.add('open');
   $('#ndText').focus();
   renderWeek(); renderIdeas(); renderShortlist();

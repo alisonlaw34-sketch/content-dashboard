@@ -1,0 +1,1394 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Docs — Alison Law</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg-page:#F7F8FA; --bg-card:#FFFFFF; --sidebar:#FFFFFF;
+    --border:#EAECF0; --border-strong:#D0D5DD;
+    --text-primary:#101828; --text-secondary:#667085; --text-muted:#98A2B3;
+    --accent:#4B6BFB; --accent-tint:#EEF2FF; --accent-hover:#3A57E8;
+    --green:#12B76A; --green-tint:#E6F7EE;
+    --amber:#F79009; --amber-tint:#FFF6E6;
+    --red:#F04438; --red-tint:#FEE4E2;
+    --purple:#7A5AF8; --purple-tint:#F4EBFF;
+    --radius-sm:8px; --radius-md:10px; --radius-lg:12px; --radius-pill:999px;
+    --shadow-card:0 1px 3px rgba(16,24,40,.08), 0 1px 2px rgba(16,24,40,.04);
+  }
+  *{box-sizing:border-box; margin:0; padding:0; -webkit-tap-highlight-color:transparent;}
+  body{background:var(--bg-page); color:var(--text-primary); font-family:'Inter',-apple-system,'Segoe UI',sans-serif; font-size:15px; line-height:1.5;}
+  button,a.navlink{font-family:'Inter',-apple-system,'Segoe UI',sans-serif; cursor:pointer; border:none; background:none; font-size:14px; color:inherit; text-decoration:none;}
+
+  .app-shell{display:flex; min-height:100vh; align-items:stretch;}
+  .sidebar{width:240px; flex:none; background:var(--sidebar); border-right:1px solid var(--border); display:flex; flex-direction:column; position:sticky; top:0; height:100vh; z-index:10; overflow-y:auto;}
+  .sidebar-brand{display:flex; align-items:center; gap:10px; padding:20px 18px 4px;}
+  .brand-mark{width:32px; height:32px; border-radius:var(--radius-sm); background:var(--accent); color:#fff; display:flex; align-items:center; justify-content:center; font-weight:700; font-size:13px; letter-spacing:.02em; flex:none;}
+  .brand-name{font-weight:600; font-size:15px; color:var(--text-primary);}
+  .back-link{display:flex; align-items:center; gap:8px; padding:14px 18px 10px; font-size:13px; font-weight:500; color:var(--text-secondary); border-bottom:1px solid var(--border);}
+  .back-link:hover{color:var(--accent);}
+
+  nav{display:flex; flex-direction:column; gap:2px; padding:10px 12px; flex:1;}
+  .nav-group-label{font-size:11px; font-weight:600; letter-spacing:.06em; text-transform:uppercase; color:var(--text-muted); padding:14px 12px 6px;}
+  nav button{flex:none; display:flex; align-items:flex-start; gap:10px; text-align:left; padding:11px 12px; border-radius:var(--radius-sm); font-size:13.5px; font-weight:500; color:var(--text-secondary); min-height:40px; line-height:1.35; width:100%;}
+  nav button:hover{background:var(--bg-page); color:var(--text-primary);}
+  nav button.active{color:var(--accent); background:var(--accent-tint); font-weight:600;}
+  nav button .nav-ic{font-size:15px; line-height:1.3; flex:none;}
+  nav button .nav-lbl small{display:block; font-weight:400; color:var(--text-muted); font-size:11px; margin-top:2px;}
+  nav button.active .nav-lbl small{color:var(--accent); opacity:.75;}
+
+  .main-wrap{flex:1; min-width:0; display:flex; flex-direction:column;}
+  header{background:var(--bg-card); border-bottom:1px solid var(--border); padding:18px 40px;}
+  header h1{font-size:19px; font-weight:700; letter-spacing:-0.01em;}
+  header .sub{font-size:12.5px; color:var(--text-secondary); margin-top:3px;}
+
+  main{max-width:820px; margin:0 auto; padding:36px 40px 100px; width:100%;}
+  .doc{display:none;}
+  .doc.active{display:block; animation:fade .15s ease;}
+  @keyframes fade{from{opacity:0;} to{opacity:1;}}
+
+  /* ---- rendered markdown typography ---- */
+  .doc h1{font-size:26px; font-weight:700; letter-spacing:-0.01em; line-height:1.25; margin:0 0 6px; color:var(--text-primary);}
+  .doc h1 + h2.sub-h{font-size:14.5px; font-weight:500; color:var(--text-secondary); margin:0 0 4px; padding-bottom:18px; border-bottom:1px solid var(--border);}
+  .doc h2{font-size:19px; font-weight:700; letter-spacing:-0.01em; margin:32px 0 12px; color:var(--text-primary); padding-top:4px;}
+  .doc h3{font-size:15.5px; font-weight:700; margin:22px 0 8px; color:var(--text-primary);}
+  .doc p{margin:0 0 14px; color:var(--text-primary); line-height:1.65;}
+  .doc p.meta-line{font-size:12.5px; color:var(--text-muted); margin:-4px 0 20px;}
+  .doc ul, .doc ol{margin:0 0 14px; padding-left:22px; line-height:1.65;}
+  .doc li{margin-bottom:6px;}
+  .doc li::marker{color:var(--text-muted);}
+  .doc strong{font-weight:700; color:var(--text-primary);}
+  .doc em{color:var(--text-secondary);}
+  .doc a{color:var(--accent); text-decoration:none; border-bottom:1px solid var(--accent-tint);}
+  .doc a:hover{border-color:var(--accent);}
+  .doc hr{border:none; border-top:1px solid var(--border); margin:28px 0;}
+  .doc blockquote{margin:0 0 14px; padding:10px 16px; border-left:3px solid var(--accent); background:var(--accent-tint); border-radius:0 var(--radius-sm) var(--radius-sm) 0; color:var(--text-primary); font-size:14px;}
+  .doc code{background:var(--bg-page); border:1px solid var(--border); border-radius:4px; padding:1px 6px; font-size:13px; font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace; color:var(--text-primary);}
+  .doc pre.codeblock{background:var(--bg-page); border:1px solid var(--border); border-radius:var(--radius-md); padding:14px 16px; margin:0 0 18px; overflow-x:auto; font-size:12.5px; line-height:1.55; font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;}
+  .doc pre.codeblock code{background:none; border:none; padding:0; font-size:inherit;}
+  .doc li.task{list-style:none; margin-left:-18px;}
+  .doc-table-wrap{overflow-x:auto; margin:0 0 18px; border:1px solid var(--border); border-radius:var(--radius-md); box-shadow:var(--shadow-card);}
+  .doc table{width:100%; border-collapse:collapse; font-size:13.5px; background:var(--bg-card);}
+  .doc th{text-align:left; font-weight:600; font-size:12px; letter-spacing:.02em; text-transform:uppercase; color:var(--text-secondary); background:var(--bg-page); padding:10px 14px; border-bottom:1px solid var(--border); white-space:nowrap;}
+  .doc td{padding:11px 14px; border-bottom:1px solid var(--border); color:var(--text-primary); line-height:1.55; vertical-align:top;}
+  .doc tr:last-child td{border-bottom:none;}
+  .doc-source{font-size:11.5px; color:var(--text-muted); margin-top:36px; padding-top:14px; border-top:1px solid var(--border);}
+
+  @media(max-width:768px){
+    .app-shell{flex-direction:column;}
+    .sidebar{position:static; width:100%; height:auto; top:auto;}
+    header{padding:16px 20px;}
+    main{padding:24px 20px 80px;}
+  }
+</style>
+</head>
+<body>
+
+<div class="app-shell">
+  <aside class="sidebar">
+    <div class="sidebar-brand">
+      <span class="brand-mark">CE</span>
+      <span class="brand-name">Docs</span>
+    </div>
+    <a class="back-link" href="./index.html">&larr; Back to dashboard</a>
+    <nav>
+      <div class="nav-group-label">Content system</div>
+      <button data-doc="engine" class="active"><span class="nav-ic">⚙️</span><span class="nav-lbl">Content engine<small>Experiment → harvest → 7 posts/week</small></span></button>
+      <button data-doc="research"><span class="nav-ic">🔎</span><span class="nav-lbl">Research engine<small>Weekly idea supply, 4 layers</small></span></button>
+      <button data-doc="weeklyos"><span class="nav-ic">🗓️</span><span class="nav-lbl">Weekly operating system<small>90 min/day task blocks</small></span></button>
+      <div class="nav-group-label">Strategy</div>
+      <button data-doc="growth"><span class="nav-ic">📈</span><span class="nav-lbl">Growth strategy<small>0 → 1M followers</small></span></button>
+      <button data-doc="roadmap"><span class="nav-ic">🧭</span><span class="nav-lbl">Long-term roadmap<small>The freedom-led career</small></span></button>
+      <div class="nav-group-label">Plans</div>
+      <button data-doc="handoff"><span class="nav-ic">📝</span><span class="nav-lbl">Fable handoff plan<small>Priority builds + sub-agent briefs</small></span></button>
+      <button data-doc="orchestra"><span class="nav-ic">🎼</span><span class="nav-lbl">Agent orchestra plan<small>Multi-agent build plan</small></span></button>
+    </nav>
+  </aside>
+
+  <div class="main-wrap">
+    <header>
+      <h1 id="hdTitle">Content engine</h1>
+      <div class="sub" id="hdSub">One experiment → a week of posts</div>
+    </header>
+    <main>
+      <div class="doc active" id="doc-engine"></div>
+      <div class="doc" id="doc-research"></div>
+      <div class="doc" id="doc-weeklyos"></div>
+      <div class="doc" id="doc-growth"></div>
+      <div class="doc" id="doc-roadmap"></div>
+      <div class="doc" id="doc-handoff"></div>
+      <div class="doc" id="doc-orchestra"></div>
+    </main>
+  </div>
+</div>
+
+<script type="text/markdown" id="src-engine">
+# The Content Engine
+## One experiment → a week of posts. This is the machine that makes 1/day possible in ≤10 hrs/week.
+
+---
+
+## The rule
+
+You never sit down to "make content." You sit down to **experiment** — the thing that runs on curiosity and doesn't deplete. Content is the harvest of the experiment, extracted afterwards in one batch session. If you're staring at a blank "what do I post" page, the engine is broken — go experiment instead.
+
+## The weekly cycle (~10 hrs)
+
+| Session | Time | What happens |
+|---|---|---|
+| **1. Experiment** | 1–2 hr | One genuine creative AI session. A new workflow, a restyle, a tool pushed somewhere new, a real piece for the portfolio. Capture screen recordings and outputs AS YOU GO (this is the only discipline required — record everything, decide later). |
+| **2. Harvest + script** | ~2 hr | Run the harvest questions below against the session. Fill 7 calendar slots. Script them with the `tiktok-script-writer` skill. |
+| **3. Film + edit (batch ×1–2)** | ~4 hr | Film all face/voiceover pieces in one sitting (same light, same setup, momentum). Assemble carousels from brand templates. Schedule the week. |
+| **Daily: engage** | 15 min | Reply to every comment. This is the actual daily metric — conversations, not numbers. |
+
+## The harvest questions (one session → 7 posts)
+
+Ask these about every experiment session:
+
+*(Pillars redefined 2026-07-26. There is no fixed mix — pick by energy. The one standing rule is the craft floor below.)*
+
+**Pillar 1 — Opinion.** Perspective, experiences, thoughts and opinions — anything where the work, career, AI or building is the subject, including money and business honesty.
+1. What did this session change about how I see AI / creativity / taste? → *thinking-out-loud talking-head*
+2. What's the contrarian lesson — the thing everyone gets wrong? → *voiceover over the session's b-roll*
+3. What decision did I make about the business this week, what did it cost, and what are the real numbers? → *honest talking-head*
+
+**Pillar 2 — Teaching.** How-to's and tutorials, thinking and taste first, builds as the vehicle. Also carries the proof.
+4. What's the exact workflow, and what's the transferable principle underneath it? → *screen demo or voiceover walkthrough (teach the thinking, name the tool second)*
+5. What did I actually make, and what does it prove? → *before/after with voiceover, no face needed*
+
+**Pillar 3 — Story.** Mum-life, the emotional posts, the story-side, why this is meaningful.
+6. What was true about being a mum this week that has nothing to do with the build? → *talking-head or voiceover-over-footage*
+   *Sort test:* strip every business/AI/career reference — if the post still works it's P3, if it collapses it's P1.
+
+**Pillar 4 — Motivation.** Earned motivation, always anchored to something specific and true.
+7. What did I learn the hard way that would change how someone else approaches this — and what's my evidence? → *talking-head or text-on-screen*
+
+**The craft floor (replaces the old percentage mix):** every week ships **at least one Pillar 2 post that visibly shows real work.** P3 and P4 are broad-reach pillars carrying no craft payload; unpaired with visible output, the account becomes just another lifestyle account. This is the one non-negotiable in the weekly mix.
+
+## The story thread (the wrapper — runs under every pillar, including the ones that aren't about her life)
+
+The arc: **millennial mum, ten years into a corporate career that looks right and feels wrong — still in it, building a creative career on the side, on her own terms, time-poor and doing it anyway. One step ahead, figuring it out in public. Proof that you don't have to quit to start.** This is the wrapper on the whole account — it runs *under* all four pillars as context, and it is not the same thing as Pillar 3 (Pillar 3 is mum-life content in its own right; the thread is the arc that gives every pillar its context).
+
+Why "still in it" beats "I got out": the story is live, not retrospective — there's real tension (will it work?), which is what makes people follow a daily account to see what happens next. And the time-poor constraint turns every efficiency claim into proof: the harvest engine isn't just the production system, it's content ("a week of posts from one hour, because one hour is what I had").
+
+One boundary: never disparage the employer or make the day job identifiable. The story is "building the next thing," not "trashing the current one" — that's both the classier read and basic professional self-protection.
+
+Rules:
+- **Identification before information.** In any post carrying the thread, the viewer hears "she was where I am" before "she knows more than me." Lived experience opens; capability lands inside it.
+- **At least 2–3 hooks per week open from the lived arc**, whatever the pillar — a teaching post can start "when I was doing this job at my desk in corporate.." before the workflow.
+- **The line never crossed:** relatable in the story, expert in the craft. She is the guide one step ahead ("here's how I see this / here's how to do it"), never the guru on a stage — and never the fellow-struggler with nothing to teach. That fourth position is the saturated, moat-free one the strategy doc rejects.
+- **Test, don't assume (from the strategy doc):** the corporate-mum resonance is a hypothesis to test cheaply. Tag story-led posts in the scorecard and watch who leans in — if story hooks outperform craft hooks in month 1, the data earns the thread more weight.
+- **Specificity is the price of the story pillar.** Mum-life is now a pillar in its own right (P3), which means the old "motherhood stays context, not the category" rule is retired — but it's replaced by a harder one: P3 must be carried by *her* specific true details, never generic mum sentiment. Generic relatability with no craft payload is the commodity trap; lived specificity is what breaks the category expectation.
+
+## Format rotation (burnout protection — built in, not optional)
+
+Face-on-camera is spent where it earns most: Pillar 1 takes and Pillar 3 story posts. Everything else rotates through voiceover, text-on-screen, screen recording, and template carousels. **Never two consecutive days of full talking-head.** If a week feels heavy, shift the mix toward voiceover and carousels — the streak matters more than the format.
+
+## Idea capture
+
+Anything that sparks mid-week goes in `IDEA_INBOX.md` immediately, tagged by pillar, one line. No idea gets developed on capture — capture is 10 seconds, development happens in the harvest session.
+
+## Algorithm checklist per post (2026)
+
+- Hook in first 3 seconds (spoken + on-screen text)
+- Built for completion — cut everything that doesn't earn the next second; 60–90s only if it holds
+- Search keywords spoken aloud AND in caption AND on-screen text
+- 3–5 hashtags, no more
+- End with something save-worthy or share-worthy (the checklist, the take, the before/after)
+- Crosspost to IG automatically. Zero bespoke IG work.
+</script>
+
+<script type="text/markdown" id="src-research">
+# The Research Engine
+## Consistent content-idea supply, ≤45 min/week. Feeds the dashboard idea bank (`dashboard/data.json`) + a rolling insights log (`outputs/research/RESEARCH_LOG.md`) so you never face a blank "what do I post" page.
+
+Companion to `ENGINE.md` (the production machine). This is the *idea-supply* machine that keeps it fed. Full rationale: `outputs/research/CREATOR_LANDSCAPE_TOPIC_ENGINE.md` §4.
+
+---
+
+## The through-line (the spine every idea ties back to)
+
+**An engineer's systems/process brain + creative taste, applied to help time-poor women, millennials and mums build a sustainable income WITHOUT quitting their job or burning out — and balance work with family.**
+
+Two co-equal moats: **systems/process thinking** (rarer than taste, and it's what the time-poor mum audience actually needs) and creative **taste**. AI is a recurring *tool* in service of the through-line — roughly **1 in 3** topics, never the constant subject.
+
+Consistency model: **narrow anchor, broad topics.** The intersection above stays recognisable so the algorithm can find the audience in the first ~100 posts; the weekly *topics* range widely for fuel.
+
+---
+
+## The four layers
+
+| Layer | Cadence | Status | What it does |
+|---|---|---|---|
+| **1. First-party comment mining** | Daily, 0 extra min | **[MANUAL]** | During the 15-min engagement block: every question, objection, or "this is so me" comment → added to the dashboard idea bank in the commenter's *exact words*. Highest-value layer; compounds as the account grows. A bot cannot do this. |
+| **2. Automated weekly pulse** | Weekly (Sat ~8am) | **[AUTOMATED]** | The scheduled task `weekly-content-research-engine`. Rotates a topic, researches the last ~30 days, appends 6–9 on-spine ideas to the dashboard idea bank AND distils the week's trends/audience language into `RESEARCH_LOG.md`. Absorbs old Layer 4 (Reddit) too. |
+| **3. Platform-native listening** | Weekly, ~15 min, phone | **[MANUAL]** | A normal TikTok scroll used as research: search 2 seed phrases → filter *This month* → note which hooks repeat (repetition = validated format); screenshot the most-liked comment-questions on the top 3 videos; check what your benchmark creators' best post this week was and reverse the *format*. |
+| **4. Deep community mining** | Monthly, ~20 min | **[MOSTLY AUTOMATED]** | Now covered by Layer 2's rotation (it hits Reddit/forums). Optional manual top-up: skim r/workingmoms, r/Entrepreneur, r/sidehustle, r/graphic_design for emerging phrasing. |
+
+The machine (Layer 2) **supplements** your audience's real words — it does not replace listening to them (Layers 1 & 3). Those two are the highest-signal and stay yours.
+
+---
+
+## Layer 2: the automated task
+
+- **Task:** `weekly-content-research-engine` (Scheduled section in the sidebar).
+- **Fires:** Saturday ~08:07 local (Brisbane), so ideas are waiting for the week's planning and your Day-7 "pick next experiment" glance.
+- **Runs only while the Claude app is open.** If it's closed all weekend, it runs on next launch — a day or two late, not lost.
+- **Output 1 — ideas:** appended to `dashboard/data.json` → `ideas[]` with sequential ids, `status: "inbox"`, and `notes` tagged `auto-harvest wk<N>`. Existing ideas are never edited or reordered. (If the GitHub values in `parameters.env` are filled in, the task pulls the live copy first and pushes back after — same protocol as CLAUDE.md; until then, local file.)
+- **Output 2 — insights + hashtags:** a compact dated section appended to `outputs/research/RESEARCH_LOG.md` (trends, audience phrases verbatim, competitive signals, sources) — the *understanding* behind the ideas — plus a **"Hashtags this week (5)"** line chosen from the hashtag pool below.
+- **Engine:** calls `/last30days` first, which falls back to WebSearch automatically (no `SCRAPECREATORS_API_KEY` set — that's fine; adding one later just enriches the data).
+
+### The 6-week topic rotation (ISO-week mod 6)
+
+| # | Weekly topic | Pillar | Moat led |
+|---|---|---|---|
+| 0 | Sustainable side income without the hustle — income/digital products as a busy woman/mum, anti-burnout | P1 *(some P4)* | — |
+| 1 | Systems & time management — running a side-thing (and life) like a system when you're time-poor | P2 | **systems** |
+| 2 | AI as leverage for busy women — practical tools/workflows that give hours back | P2 | *(AI)* |
+| 3 | Taste & quality — making work that doesn't look AI-generated / beating AI slop | P2 | **taste** *(AI)* |
+| 4 | The corporate career that looks right but feels wrong — staying not quitting, quiet ambition | P1 | — |
+| 5 | Working-mum reality — ambition + family, invisible load, time-poverty, doing it anyway | P3 *(sort test: build-focused → P1)* | — |
+
+Only #2 and #3 are AI-forward (≈1 in 3). The rest are income, systems, identity, life.
+
+---
+
+## The hashtag pool (weekly run picks 5, logs them to RESEARCH_LOG.md)
+
+TikTok treats hashtags as its weakest search signal — so keywords must ALSO be spoken aloud and in on-screen text. Use **3–5 per post, never more.** Avoid dead weight (#fyp / #foryou / #viral) and bare #sidehustle (saturated, hustle-coded). AU spelling ("mum" not "mom").
+
+**CORE (reuse most weeks — identity + positioning):**
+`#workingmum` · `#mumsoftiktok` (or `#mumtok`) · `#quietambition` · `#buildinpublic` (softer alt: `#buildwithme`)
+
+**TOPICAL buckets (pull 1–2 matching the week's rotation topic):**
+| Rotation topic | Topical tags |
+|---|---|
+| 0 side income no-hustle | `#sidehustlemum` `#sidehustleforwomen` `#digitalproducts` |
+| 1 systems & time | `#timemanagement` `#productivitytok` `#gettingorganised` |
+| 2 AI leverage | `#aiforcreators` `#aitools` `#aiforsmallbusiness` |
+| 3 taste & anti-slop | `#aiart` `#createwithtaste` `#aivsreal` |
+| 4 corporate arc | `#careerchange` `#corporatelife` `#corporatetocreative` |
+| 5 working-mum reality | `#workingmumlife` `#mumlife` `#balancenotburnout` |
+
+**Weekly formula:** ~2 CORE + ~2 TOPICAL (this week's bucket) + 1 fresh/rising tag the run actually saw on high-performing posts in the research (only if real — else 3 core/topical). 
+
+**Guardrail:** past the intro/story-setup weeks, **no more than 2 mum-coded tags** in a set — the account is energy-first, not mum-first (motherhood is context, not category). As topics broaden, rotate mum tags down and systems/income/taste tags up. The pool grows over time: when the run spots a genuinely rising tag, it notes it in RESEARCH_LOG.md so it can be promoted into a bucket here.
+
+---
+
+## The manual weekly checklist (≤20 min, wraps the automated drop)
+
+Do this once a week, ideally when you sit down to plan (Day 2 harvest or Day 7 glance):
+
+1. **Read the week's auto-harvest ideas** in the dashboard (notes tagged `auto-harvest`) and skim the new `RESEARCH_LOG.md` entry. Promote the 1–3 ideas that make you go "yes, that one" into the calendar; leave the rest.
+2. **Layer 3 scroll (10 min):** the TikTok search + comment-screenshot routine above. Add anything sharp to the inbox in the commenter's words.
+3. **Layer 1 review (kept from daily habit):** glance at your own best/most-asked comments this week — the single best one is often next week's post.
+4. Filter to promote, always the same test: ***"Would the time-poor employed woman/mum in AUDIENCE_TERTIARY save or share this?"*** Everything else stays in the inbox or dies.
+
+---
+
+## Kill-switch
+
+If the engine ever competes with filming time, **the engine loses.** Layer 1 (daily comment mining) alone can sustain idea supply indefinitely — Layers 2–4 are amplifiers, not requirements. The point is posting, not researching posting.
+
+---
+
+## Changing the machine
+
+- **See it / check next run:** ask Claude to `list_scheduled_tasks`, or open the Scheduled section in the sidebar.
+- **Change day/time, rotation, or topics:** ask Claude to update the task (`update_scheduled_task` on `weekly-content-research-engine`). The rotation table above is the source of truth — keep it and the task prompt in sync.
+- **Pause it:** disable the task in the sidebar (e.g. during a heavy work crunch — the inbox already holds weeks of fuel).
+
+---
+
+*Built 2026-07-07; repointed to the dashboard + RESEARCH_LOG 2026-07-10 after the idea bank moved to `dashboard/data.json`. Seed run: week-28 topic (corporate-career arc) → ideas i70–i77 + the first RESEARCH_LOG entry.*
+</script>
+
+<script type="text/markdown" id="src-weeklyos">
+# The Weekly Operating System — 90 minutes a day, 1 post/day
+## Task-based, not time-based: each block has ONE mode. Days can shuffle; modes never blend.
+## Design logic: scripts/captions (her slowest, most draining stage) are delegated to Claude entirely. Her 90-minute blocks are spent on the energising work — experimenting, making, filming, assembling.
+
+---
+
+## The non-negotiable rules (these ARE the schedule)
+
+1. **Never write from a blank page.** Claude drafts every script and caption via the `tiktok-script-writer` skill. Alison edits in her voice — **10 minutes max per script**, timer on. Editing a draft is fast; drafting is the sinkhole.
+2. **Captions are born with scripts** — same session, same draft, never a separate task.
+3. **Scripts lock on script day.** No rewriting on film day. If one feels wrong at the camera, swap in a different post from `IDEA_INBOX.md` — never rewrite live.
+4. **Two-take rule.** Take 2 is the take. Take 3 only for a factual error. Build-in-public makes rough edges on-brand; the taste is in the ideas and visuals, not broadcast polish.
+5. **Produce a week ahead.** This week's blocks make NEXT week's posts. Posting daily is a 2-minute act from a scheduled bank, not a daily production sprint.
+6. **Engagement never comes out of the 90 minutes.** 10–15 min replying to comments happens from the phone in dead time (lunch, kettle, commute). It's the daily metric that matters — conversations.
+7. **One real day off per week, protected.** The streak survives because the bank is full, not because Sunday was sacrificed.
+
+---
+
+## The week (default: evening blocks)
+
+| Block | Mode | The 90 minutes |
+|---|---|---|
+| **Day 1 — EXPERIMENT** | Explore/create | The renewable session: one real creative AI experiment. Screen-record everything, save every output (they're the Pillar 2 proof posts + b-roll). End with a 5-min voice-note dump of what happened, what surprised you, what you'd tell someone. |
+| **Day 2 — HARVEST + SCRIPT (with Claude)** | Edit, not write | Open a session, paste/say the voice-note dump. Claude drafts all 7 scripts + captions from the week's slots (no fixed pillar mix — but the craft floor holds: at least one P2 post that visibly shows real work). You edit each for voice — 10 min cap each. Lock all 7. |
+| **Day 3 — FILM BATCH** | Perform once | All face content (2 talking-heads) + all voiceovers (2–3) in ONE sitting. Same setup, same light, momentum. Two-take rule. Screen demos trimmed from Day 1's recordings. |
+| **Day 4 — EDIT BATCH 1** | Assemble | 3–4 posts: CapCut template, auto-captions, export. **20–25 min per post, timer on.** |
+| **Day 5 — EDIT BATCH 2 + SCHEDULE** | Assemble | Remaining 3–4: carousel from brand template (no filming, no editing), before/after from Day 1 outputs. Schedule the full week. Bank closed. |
+| **Day 6 — BUFFER / BUILD** | Flex | Whatever slipped gets caught here. If nothing slipped: this is where roadmap Phase 1–2 hours live — lead magnet, product, portfolio. Never new strategy docs. |
+| **Day 7 — OFF** | Protected | One task only, 10 minutes: glance at the idea inbox, pick next week's experiment. Otherwise: off. |
+
+**When the ~2-hour weekend block exists (not guaranteed, use when it appears):** it becomes FILM + EDIT combined (daylight, more room, one setup for the whole week), and the freed weekday evenings shift to BUILD. This is the accelerated week — take it when life allows, never depend on it.
+
+**Early-morning option:** if an evening feels dead, the same block moves to morning. Mode stays the same; the schedule is task-based so the clock doesn't matter.
+
+---
+
+## Format budget per week (what makes 7/week affordable)
+
+| Count | Format | Production cost |
+|---|---|---|
+| 2 | Talking-head (P1 takes + P3 story) | Filmed in one batch, 2 takes each |
+| 2–3 | Voiceover (over b-roll / screen recording / stills from Day 1) | Recorded in minutes, edit is assembly |
+| 1 | Carousel (TikTok photo-mode + IG) | Zero filming, zero video editing — template |
+| 1 | Before/after or screen demo (P2 — this is the craft floor post) | Made FROM Day 1's outputs — already exists |
+
+If a week collapses (sick kid, work crunch): the emergency post is always a carousel or a text-on-screen take from the idea inbox — 20 minutes, streak intact. Lowering the day's format is the plan working, not the plan failing.
+
+---
+
+## Time math (honest)
+
+6 blocks × 90 min = 9 hrs + phone engagement ≈ 10–10.5 hrs. At the cap. Product/build hours only exist on Day 6 when production hasn't slipped — which is why rules 1–4 (speed rules) are what actually fund the business, not just the content.
+
+## Review
+
+Weekly scorecard (`SCORECARD.md`) on Day 5 or 6, 10 minutes, then closed. Day-30 gate: if the week is consistently overflowing its blocks, the pace decision gets made there — deliberately, with data.
+</script>
+
+<script type="text/markdown" id="src-growth">
+# Growth Strategy — 0 → 1M Followers
+## Alison Law · Teaching creative people to use AI with taste
+### Created 4 July 2026 · Review at day 30, day 60, day 90
+
+---
+
+## The goal, honestly framed
+
+1M followers is the **horizon**, not the plan. The plan is a staged climb — 0 → 1K → 10K → 100K — with review gates, at a pace of **1 post/day for 6 months (~180 posts)** inside ~10 hrs/week. The business the audience feeds is teaching + low-cost digital products (workflow guides), per `ALISON_LAW_BUSINESS_STRATEGY.md`.
+
+Three facts from research that reframe the goal:
+
+1. **Revenue arrives at 1K–10K followers, not 1M.** ~1K engaged followers can generate $2–5K/month with the right digital product; a $50–97 product at 2% conversion on an 8–10K audience = $10–15K per launch. The business validates two orders of magnitude before the vanity number.
+2. **0 → 100K in 6–12 months is achievable** in education niches with consistency — education content drives saves and shares, now the heaviest-weighted algorithm signals.
+3. **1M in 12 months part-time is an outlier outcome, not a plannable one.** Comparable AI-education creators (Riley Brown ~640K, Adam Digital ~530K, Tiffany Janzen 1M+ across platforms) got there with relentless cadence and repeatable formats over multi-year runs.
+
+---
+
+## What the 2026 TikTok algorithm rewards (research summary)
+
+- **New accounts skip the follower-testing phase** — videos go straight to a small interest-matched test audience. Starting at zero is a mild advantage, not a penalty.
+- **Completion rate is the virality bar: ~70%** (up from ~50% in 2024). Post for completion, not length — though 60–90s content watched through now earns extra weight.
+- **Saves and shares outweigh likes.** Educational and perspective content drives exactly these.
+- **The first 3 seconds decide everything** — 71% of users decide whether to keep watching in that window.
+- **TikTok is a search engine** — ~40% of Gen Z search TikTok before Google. Keywords must appear in captions, on-screen text, and spoken words. 3–5 hashtags max.
+- **Consistency signals commitment** — sporadic posting suppresses reach; the algorithm learns the audience faster at higher cadence.
+- **Micro-niche discipline** — one recognisable thread for the first ~100 posts. The algorithm finds the audience faster when content is topically consistent.
+- **Judgment window: 30 posts / 30 days minimum** before evaluating anything.
+
+---
+
+## Positioning (from the business strategy doc)
+
+> **Update 2026-07-10 — broadened.** Two co-equal moats: engineer's **systems/process thinking** + creative **taste**. Territory: sustainable income + work/family balance for time-poor women, millennials and mums — AI is a tool in ~1 in 3 topics, not the constant subject. Model: "narrow anchor, broad topics." The bullets below predate this; where they read AI-taste-only, the broadened spine wins. See `content-engine/RESEARCH_ENGINE.md`.
+
+- **Story is the wrapper. AI-creative expertise is the product.** Curious creative who happens to be a mum, not mum-first.
+- **The wrapper is visible on everything:** the arc — millennial mum, still in the corporate career that looks right and feels wrong, building a creative career on the side, time-poor, proof you don't have to quit to start — opens 2–3 hooks per week across ALL pillars. Identification before information: "she was where I am" lands before "she knows more than me." Relatable in the story, expert in the craft — never fellow-struggler with nothing to teach (see `content-engine/ENGINE.md`, story thread).
+- **The moat:** engineer + design-eye + AI edge — unique at that intersection. Never trade it for a saturated demographic angle.
+- **Posture:** the guide ("here's how I see this"), not the student ("watch me try this").
+- **Audience:** sorted by energy — curious, ambitious, alive makers — not by profession or demographic.
+- **Value on offer:** take someone who feels behind on AI and afraid of looking amateur → capability, confidence, taste.
+
+---
+
+## Content system: four pillars, one engine
+
+**Not a tutorial channel.** Tutorials-only is the treadmill that caused the last burnout. *(Pillars redefined 2026-07-26. There is no fixed percentage mix — she picks by energy, one week at a time. The single standing rule is the craft floor below.)*
+
+| Pillar | What it is | Primary formats |
+|---|---|---|
+| 1. Opinion | Perspective, experiences, thoughts and opinions — anything where the work, career, AI or building is the subject. Carries money honesty, business decisions and trade-offs, market critique. | Talking-to-camera / thinking-out-loud; text-on-screen takes; voiceover over b-roll |
+| 2. Teaching | How-to's and tutorials — the thinking and the taste first, her builds and technical explorations as the vehicle. **Carries the proof**: show-the-work, portfolio pieces, before/afters. | Screen-recording demos (face hook + payoff); voiceover walkthroughs; before/after; carousel breakdowns |
+| 3. Story | Mum-life, the emotional posts, the story-side, why it's meaningful. Stands alone — a mum with no side-business still relates. The audience-capture pillar. | Voiceover-over-footage; honest talking-head; text-on-screen |
+| 4. Motivation | Earned motivation and growth mindset, always anchored to a specific true thing she did, learned or measured. | Talking-head; text-on-screen; voiceover |
+
+**The craft floor.** Every week ships at least one Pillar 2 post that visibly shows real work. Pillars 3 and 4 are broad-reach with no craft payload — unpaired with visible output, the account drifts into the lifestyle-commodity trap the audience research names. This floor replaces the old percentage mix.
+
+Face-on-camera is concentrated where it pays most (Pillar 1 takes, Pillar 3 story posts). Voiceover and template-based carousels carry the rest. Carousels come from repeatable brand-system templates — never bespoke one-offs.
+
+**The engine — one activity, harvested four ways.** One genuine experimenting session per week produces:
+- the session itself, and what it changed about how she sees things → Pillar 1 opinion post(s)
+- the teardown of how it worked, plus the outputs as proof → Pillar 2 teaching post(s)
+- what was true about the week as a mum, independent of the build → Pillar 3 story post
+- what she learned the hard way, with the evidence → Pillar 4 motivation post
+
+One hour of real work → a week of posts. This — not willpower — is what makes 1/day survivable in ≤10 hrs/week. See `content-engine/ENGINE.md`.
+
+**Weekly rhythm (~10 hrs):**
+1 experiment session (1–2 hr) → 1 harvest/scripting session with the `tiktok-script-writer` skill (2 hr) → 1–2 batch film/edit sessions (~4 hr) → daily 15-min engagement, replying to every comment.
+
+**Platform:** TikTok primary (video + photo-mode carousels). Instagram = auto-crosspost echo, zero bespoke effort.
+
+---
+
+## Phased milestones and gates
+
+| Phase | Target | Gate / review |
+|---|---|---|
+| **0. Ship (week 1)** | Post #1 live within 7 days — a Pillar-1 opinion post that claims expertise directly. Build the harvest/idea-capture system same week. | Hard gate: no other brand/skill work until post #1 is live |
+| **1. Days 1–30** | 30 posts at 1/day, craft floor held every week; identify 2–3 outperforming hook/format patterns | Day-30 review: signal (completion %, saves, shares, conversations) + **sustainability check** — if 1/day isn't holding inside ~10 hrs/wk, drop to 4–5/wk deliberately, don't crash |
+| **2. Days 30–60** | 60 posts; email capture live (link-in-bio lead magnet); first digital product scoped and soft-launched | Real-signal check: conversations and "this helped me," or well-produced silence? Name it either way |
+| **3. Days 60–90** | 90 posts; validation trigger review | **Decide, don't drift:** promote pivot to strategy, or honestly revisit — including the archived April production model |
+| **4. Months 3–6** | 180 posts; double down on winners; Pillar 2 proof posts filling from accumulated work; product launch push at ~10K followers | Monthly scorecard; 0→10K+ realistic in this window |
+| **5. Months 6–12** | Sustain/adjust pace on real data; duets & collabs with adjacent AI creators; 100K push | At 100K: re-plan toward 1M with first-party data (year-2 horizon) |
+
+---
+
+## Metrics — the guardrail is structural
+
+The last content run ended via a specific mechanism: effort in → quiet numbers back → self-worth conclusion → quit. So:
+
+- **Daily scoreboard (the only numbers checked daily):** real conversations, replies, "this helped me."
+- **Weekly review only:** completion rate → saves → shares → email subscribers → followers → revenue. Followers deliberately near the bottom. Never checked on a clock.
+- Weekly scorecard template: `content-engine/SCORECARD.md`.
+
+---
+
+## Sources
+
+- [How the TikTok Algorithm Works in 2026 — Hootsuite](https://blog.hootsuite.com/tiktok-algorithm/)
+- [TikTok Algorithm Tips for New Accounts 2026 — Socialync](https://www.socialync.io/blog/tiktok-algorithm-tips-new-accounts-2026)
+- [How the TikTok Algorithm Works in 2026 — Ampfluence](https://www.ampfluence.com/how-the-tiktok-algorithm-works-in-2026-and-how-to-beat-it-for-more-reach/)
+- [TikTok Demographics, Algorithm & Stats 2026 — Posterly](https://www.poster.ly/guides/tiktok-guide)
+- [How to Go Viral on TikTok in 2026 — PostEverywhere](https://posteverywhere.ai/blog/how-to-go-viral-on-tiktok)
+- [14 Ways to Get More Followers on TikTok in 2026 — Buffer](https://buffer.com/resources/how-to-get-followers-on-tiktok/)
+- [How I Grew From 0 to 100K Followers on TikTok — A Creative Co](https://www.acreativeco.com/blog/how-i-grew-my-tiktok)
+- [Creator Income at Every Follower Stage — EarnifyHub](https://earnifyhub.com/creator-economy/creator-income-every-follower-stage)
+- [Creator Revenue Stack by Stage — Influencer Marketing Hub](https://influencermarketinghub.com/creator-revenue/)
+- [Micro-Influencer Monetization: 1K–10K Followers — CreatorFlow](https://creatorflow.so/blog/micro-influencer-monetization/)
+- [How Creators Make $10K/Month in 2026 — Socialync](https://www.socialync.io/blog/content-creator-monetization-2026)
+- [Top 20 AI Educators on Social Media 2026 — Favikon](https://www.favikon.com/blog/top-ai-educators-social-media)
+- [Top 40 AI TikTok Influencers 2026 — Feedspot](https://creators.feedspot.com/ai_tiktok_influencers/)
+- [TikTok Creator Earnings by Niche 2026 — InfluenceFlow](https://influenceflow.io/resources/tiktok-creator-earnings-by-niche-the-complete-2026-guide/)
+</script>
+
+<script type="text/markdown" id="src-roadmap">
+# Long-Term Roadmap — The Freedom-Led Career
+## Alison Law · Created 5 July 2026 · Review quarterly, or at each phase gate
+### Companion to `GROWTH_STRATEGY_1M.md` (audience engine) and `ALISON_LAW_BUSINESS_STRATEGY.md` (living strategy)
+
+---
+
+## The destination (quantified for the first time)
+
+- **The Tuesday vision** is the actual goal: flexible family mornings, deep-focus work, home by late afternoon. Income and audience are instruments.
+- **Replace-salary target: $10–15K/month AUD** from the business.
+- **Exit appetite: as fast as possible, 12–18 months** — but trigger-based, not date-based (see the triangle below).
+- **Hour cap: ~10 hrs/week, firm.** This is not a limitation on the plan; it IS the plan. A freedom-led career built by sacrificing family time is a contradiction.
+- **Parents' retirement**: the deepest driver, explicitly a Phase 6 horizon (~$20K+/mo territory). Named so it stops being unspoken pressure on every near-term number.
+
+## The triangle — named honestly
+
+**10 hrs/week + $10–15K/month + exit in 12–18 months: pick two.** From a zero audience, all three together is not a plan, it's a hope. Resolution chosen here:
+
+1. **The hour cap is sacred** (it's the point of the whole thing).
+2. **The income target is sacred** (it's what makes the exit real).
+3. **The timeline flexes via a staged exit:** instead of one leap at month 18, drop to a 4-day corporate week when business income consistently exceeds ~20% of salary. That trade is financially neutral and buys back ~8 hrs/week — which accelerates everything after it. Full exit when business income holds at $10K+/mo for 6 consecutive months with a 6-month expense buffer banked. Realistic full-exit window: **18–30 months**, aggressive case 18.
+
+## The income ladder (sequenced to psychology as well as maths)
+
+The preference ranking from the July interview (products → 1:1 → cohorts → B2B) tracks rejection-exposure, not income. The ladder below respects the fear where it can and refuses to let it set the ceiling:
+
+| Rung | What | Price | Why it fits | When |
+|---|---|---|---|---|
+| 1. Digital products | Workflow guide → style-reference system (product candidate already in IDEA_INBOX) | $27–97 | No live rejection risk; built once; validates the pivot with a first sale | Scope mo 2, launch mo 3–4 |
+| 2. Flagship product | Deeper course/system, taught not performed | $97–197 | Products alone at this tier can carry $2–4K/mo at ~10K audience | Mo 6–9 |
+| 3. Live small-group cohort | 4–6 wk "AI with taste" for creatives, 8–12 seats | $400–600 | **Convener mode — her strongest identity.** Sold inbound to warm audience; zero cold outreach. One cohort ≈ $4–6K | First run mo 9–12, then every 6–8 wks |
+| 4. 1:1 workflow sessions | Quiet offer, Studio-Diagnostic style (carried from April model) | $150–300/session | Private, energising, no broadcast | Offered from mo 6, never scaled |
+| 5. B2B team training | Half-day AI workshops for studios/agencies/teams | $2–5K/engagement | **Inbound only.** Content brings them; she never cold-pitches. Corporate fluency = unfair advantage | Accept from mo 12 when it knocks |
+
+**Path to $10–15K/mo (illustrative, ~mo 18–24):** products $3–4K + one cohort/6 wks ≈ $3–4K/mo averaged + 2–4 1:1s $1K + one B2B/quarter averaged $1–2K ≈ $8–11K/mo, growing with audience. All deliverable inside ~10 hrs/wk because content hours shrink as library and templates compound.
+
+**Prerequisite action (this month):** check employment contract for moonlighting/conflict clauses BEFORE first paid offer. Boring, essential, protects the whole bridge.
+
+## The phases
+
+**Phase 0 — Ship (now → day 30).** Post #1 by 11 July. 30 posts. No new strategy documents — this roadmap is the last one until the day-90 review. *Gate: streak alive, engine sustainable.*
+
+**Phase 1 — Own the audience (mo 1–3).** Day-30 review makes the pace decision honestly: at a 10-hr cap, 1/day leaves no build hours — expect to drop to ~5/wk and reallocate ~3 hrs/wk to building. Email capture live by ~day 45 (lead magnet = slice of the future product). *Gate: ~1K followers, first 100–300 email subscribers, real "this helped me" signals.*
+
+**Phase 2 — First money (mo 3–6).** Launch rung-1 product to the list, whatever its size. The goal is not income; it's the **first sale — the validation trigger** that promotes the whole pivot from hypothesis to strategy per the business strategy doc. *Gate: pivot validated (or honestly revisited, per the doc's 60–90 day clause).*
+
+**Phase 3 — The ladder (mo 6–12).** Flagship product; quiet 1:1 offer; first cohort when audience ≈ 5–10K. Host one small in-person gathering in Brisbane before mo 12 — a $0-stakes test of the convener/hub identity (see below). *Gate: $3–5K/mo by mo 12.*
+
+**Phase 4 — Staged exit (mo 12–18).** Cohort rhythm; inbound B2B accepted. When business income > ~20% of salary for 3 consecutive months → **drop to 4-day corporate week.** The reclaimed day goes to the business, not to more content — to delivery and product. *Gate: $8–10K/mo; full-exit trigger armed.*
+
+**Phase 5 — Full exit (mo 18–30).** Exit when $10K+/mo holds 6 months + 6-month buffer banked. Post-exit hours rise only to ~20–25/wk — the Tuesday vision is the constraint, not a treadmill with a nicer boss. Community/membership layer starts here, not before.
+
+**Phase 6 — Horizon.** Parents' retirement fund; the creative hub — grown from the gatherings that started in Phase 3, so that by the time it needs a building it already has a community. (The hub stays under the periodic honest question the strategy doc requires: destination, or comfortable distance?)
+
+## Standing guardrails (from the personal context file — structural, not optional)
+
+1. **The ruler check (monthly):** is any number being read as a verdict on her rather than data about a post/product? That mechanism — effort in, quiet numbers, self-worth conclusion, quit — has ended a run before. Catch it in the review, by name.
+2. **Wrapper-creep check (monthly):** is the content drifting toward pure relatable-story (safe) and away from authority/teaching content (sells)? The instrument is now the **craft floor** — at least one Pillar 2 post visibly showing real work every week (the percentage mix was retired 2026-07-26). Check the weekly scorecards: a run of weeks where the floor was missed is the drift, in data.
+3. **Preparing-vs-acting check (every session):** the shipping check in CLAUDE.md. Strategy documents are now rationed: no new ones until a phase gate.
+4. **Followers are instrumental.** 1M remains the horizon metric of the growth plan, but this roadmap's north-star pair is **income per month + hours per week**. The email list, not the follower count, is the business asset.
+5. **Fear vs genuine no:** products-first preference partially = rejection avoidance (named 5 July). Cohorts and inbound B2B are the compromise that honours the fear without letting it set the income ceiling. If cohort-avoidance appears at mo 9–12, name it as the block, not a strategy choice.
+6. **One decision, kept.** Clarity follows commitment. The pivot's validation is Phase 2's first sale — until then, no new directions get built, however good tonight's idea feels. Date it before marrying it.
+
+## Review rhythm
+
+- **Weekly:** scorecard only (`content-engine/SCORECARD.md`).
+- **Monthly:** guardrails 1–2 + phase progress.
+- **Phase gates:** the only places strategy may change.
+- **Fold into `ALISON_LAW_BUSINESS_STRATEGY.md`** at the day-90 validation review — not before.
+</script>
+
+<script type="text/markdown" id="src-handoff">
+# FABLE HANDOFF PLAN — Orchestration for Sub-Agent Execution
+## Written by Fable 5 on 11 July 2026, its last session. Executed by Opus 4.8 / Sonnet sessions from 12 July onward.
+## How to use: start a session, say "Read FABLE_HANDOFF_PLAN.md and execute Task N." Pick the model the task specifies. The session must load Section 0 and the task's named files before producing anything.
+
+---
+
+# SECTION 0 — MASTER CONTEXT BRIEF (load first, every session)
+
+## Who you're working for
+Alison Law. Chemical engineer, ~10 years corporate, still employed and staying — building a personal-brand business on the side in ~90 min/day. Millennial mum of a toddler. Brisbane, Australia. Deeply curious, systems thinker with genuine creative taste (photography, interiors, film-camera aesthetic). Introverted but fine being visible about ideas and process; the line is her private life, not visibility itself.
+
+## The business (as of 11 July 2026)
+- **Positioning (broadened 2026-07-10):** an engineer's systems/process thinking + creative taste, applied to helping time-poor women, millennials and mums build sustainable income without quitting or burning out. **AI is a recurring tool (~1 in 3 topics), NOT the constant subject.** Model: "narrow anchor, broad topics."
+- **The story arc (wrapper on everything):** still in the corporate career that looks right and feels wrong, building on the side, time-poor and doing it anyway. Core promise: *you don't have to quit to start.* NEVER use "she left engineering" framing. Never disparage or identify the employer.
+- **Channel:** TikTok primary (1 post/day streak target), IG auto-crosspost. Four pillars (redefined 2026-07-26, no fixed mix): P1 opinion (perspective/thoughts/opinions; work, career, AI, money and business decisions as subject), P2 teaching (how-to's; thinking and taste first, builds as vehicle; carries the show-the-work proof), P3 story (mum-life, emotional, stands alone with no build journey), P4 motivation (evidence-anchored growth mindset only). Standing rule: the craft floor — at least one P2 show-the-work post per week.
+- **Money model (see `outputs/research/LONGTERM_ROADMAP.md`):** income ladder — low-cost digital products ($27–97) → flagship ($97–197) → live cohorts ($400–600, inbound only) → 1:1 → inbound B2B ($2–5K). Target $10–15K/mo AUD; staged exit (4-day corporate week when business income > ~20% salary for 3 months; full exit at $10K+/mo × 6 months + buffer).
+- **Phase gates:** post #1 live → day-30 review (pace + signal) → first sale = pivot validated (day 60–90) → cohort at ~5–10K audience.
+
+## Canonical files (never work from this brief alone)
+| File | What it is |
+|---|---|
+| `CLAUDE.md` (project) | Current priorities, dashboard protocol, research engine — read at session start |
+| `C:\Users\aliso\OneDrive\Documents\Claude\ALISON_LAW_BUSINESS_STRATEGY.md` | Living strategy doc |
+| `C:\Users\aliso\OneDrive\Documents\Claude\ALISON_LAW_PERSONAL_CONTEXT.md` | Psychology — load for any advisory/strategy work |
+| `brand/BRAND_SYSTEM.md`, `brand/MESSAGING_BANK.md`, `brand/STYLE_PROFILE.json` | Voice + visual identity |
+| `outputs/research/LONGTERM_ROADMAP.md` | Income ladder, phases, guardrails |
+| `outputs/research/GROWTH_STRATEGY_1M.md` | Audience engine + algorithm playbook |
+| `outputs/research/AUDIENCE_TERTIARY.md` | The digital-product buyer profile |
+| `content-engine/ENGINE.md`, `WEEKLY_OS.md`, `SCORECARD.md` | The weekly operating system |
+| `dashboard/data.json` | SOURCE OF TRUTH for ideas + weekly plan (pull/push protocol in CLAUDE.md) |
+
+## Voice rules (non-negotiable for any written output in her voice)
+- Register: smart friend who's already figured something out, sharing casually. Direct without aggression, warm without softness, confident without performing. **Calibration test: "Would Alison say this to a creative she respects?"**
+- Rhythm: short punchy sentences land points; longer flowing ones explain. Fragments are correct when rhythm demands. ".." marks a spoken pause/lean-in. Sentences starting with "And"/"So" are natural and frequent. "But here's the catch/thing."
+- Words she uses: results, relevant, massive, system, consistent outcomes, beginner friendly, creatives, orchestrate and direct (never "prompt engineering"), "I think", "when I first started".
+- BANNED: hype (insane, game-changer, mind-blowing, hack, unlock, level up, 10x), teacherly ("let me break this down", "let me walk you through"), sales energy ("DM me", "don't miss this", hard CTAs in caps), performative excitement, "I'm SO excited".
+- Posture: the guide one step ahead ("here's how I see this"), never guru-on-a-stage, never fellow-struggler-with-nothing-to-teach. **Identification before information** — "she IS where I am" lands before "she knows more than me."
+- Small true numbers out-trust big claimed ones. Honesty about the grind is the brand.
+
+## Psychology guardrails (these are structural; enforce them even when she pushes)
+1. **Preparation-over-action** is her core avoidance pattern. If she asks a session to produce more strategy/planning documents instead of executing a task or shipping content — name it directly, once, kindly. She responds well to this. Strategy docs are RATIONED: none new until a phase gate.
+2. **The wrong ruler:** low numbers read to her as a verdict on her worth (this ended her last content run). Never present metrics as verdicts; daily scoreboard is conversations and "this helped me", followers are weekly-review only.
+3. **The not-enough reflex:** asked to claim value, she reflexively says "nothing/I'm just starting." Counter: her distance from power-user status is proximity to her audience — the qualification, not the gap. Never let "lower my expectations" pass as realism.
+4. **Wrapper-creep:** under pressure she drifts toward relatable-story content (safe) and away from authority/teaching content (sells). The instrument is the craft floor — at least one P2 show-the-work post every week.
+5. **Certainty from one conversation is a hypothesis, not a decision.** Favour cheap tests over restructures. Don't rebuild systems around tonight's conviction.
+6. **Subtraction over addition.** She generates ideas faster than she can act. Helping her put things down is more valuable than adding directions.
+
+## Standing rules for all tasks below
+- **R1.** Sub-agent builds happen in Day-6 buffer blocks only (`content-engine/WEEKLY_OS.md`). Filming and posting ALWAYS win. If she's behind on the streak, the session's first move is the shipping check: "Is the streak alive — did you post today?"
+- **R2.** Task 3 (contract kit) must be complete and reviewed by Alison before ANY sales asset (product, lead magnet with product mention) goes live.
+- **R3.** Model routing: voice-sensitive tasks (1, 2, 4, 7) → **Opus 4.8**. Spec-driven/structural tasks (3, 5, 6, 8, 9) → **Sonnet**.
+- **R4.** Outputs save to the exact paths specified. Drafts iterate in place; don't spawn variant files.
+- **R5.** If a brief conflicts with what you find on disk (files moved, positioning updated again), **what's on disk wins** — this plan is a snapshot from 11 July 2026. Flag the discrepancy to Alison.
+
+---
+
+# TASK 1 — DIGITAL PRODUCT DRAFT (P0 · Opus 4.8 · Weeks 1–2, two Day-6 blocks)
+
+## Objective
+Draft Alison's first paid product end-to-end: a workflow guide provisionally titled **"Build a Style Reference Before You Prompt"** — the one step that turns generic AI images into work with her kind of taste. Price band $27–47. This is the revenue-critical asset: the first sale is the roadmap's validation trigger (Phase 2). A complete draft now means launch is an editing job, not a creation job.
+
+## Session setup — load in this order
+1. Section 0 above. 2. `outputs/research/AUDIENCE_TERTIARY.md` (the buyer). 3. `brand/STYLE_PROFILE.json` (the worked example's raw material). 4. `brand/BRAND_SYSTEM.md` + `brand/MESSAGING_BANK.md` (voice). 5. `skills/brand-guidelines/references/FORMAT_PDF_GUIDE.md` (the eventual format target). 6. Skim `dashboard/data.json` P2 ideas for teaching angles already validated.
+
+## The product thesis (hold this line)
+The buyer's problem is NOT "I can't use AI" — it's "everything I make with AI looks generic and I'm afraid it looks amateur." The fix being sold: **a repeatable style-reference system built BEFORE any generation** — codify your taste once (references, palette, light, mood, composition rules, banned clichés) into a reusable brief, then direct every tool with it. Teach the thinking, name tools second (this answers the #1 course regret found in research: tool-specific courses go stale).
+
+## Structure spec (draft in Markdown → `outputs/guides/PRODUCT_STYLE_REFERENCE_DRAFT.md`)
+1. **Open (1 page):** the generic-results problem, named in her voice; the promise (consistent, yours, in minutes not hours).
+2. **The idea (1–2 pages):** taste is direction, not generation. Why a style reference beats better prompts. The engineer's framing: a system with the same inputs produces consistent outcomes.
+3. **The build (core, ~5 steps):** (a) harvest your taste — pull 10–15 references you love, name WHY in plain words; (b) extract the variables — light, palette, texture, composition, mood, era/medium; (c) write the reference brief — her 5-part template; (d) the banned list — clichés and tells to exclude; (e) test-and-tighten loop — 3 generations, compare against references, adjust the brief not the prompt.
+4. **Worked example:** her own film-camera interior style, walked from Pinterest board → `STYLE_PROFILE.json`-style brief → before/after images (leave image placeholders + exact captions).
+5. **Templates (the actual value):** blank style-reference brief; the extraction worksheet; the banned-list starter; a quick-start one-pager.
+6. **Close:** what changes now; one honest line about her (still-in-corporate, after-bedtime hours); no hard sell of anything else.
+
+Target length: 2,500–4,000 words + templates. Written entirely in her voice per Section 0.
+
+## Process
+Block 1: full draft. **Stop and show Alison the outline after Section 2 is drafted** — get a yes before writing the rest. Block 2 (separate session/week): revision pass against the acceptance checklist, then hand to `/brand-guidelines` PDF formatting as a later, separate job.
+
+## Acceptance checklist
+- [ ] Passes the calibration test on every page; zero banned words
+- [ ] Tool-agnostic: works if the reader uses Midjourney, nano banana, or whatever ships next year
+- [ ] A beginner who "feels behind" can execute step (a) within 30 minutes of reading
+- [ ] The worked example uses HER real style, not an invented one
+- [ ] Templates are genuinely usable standalone (the product survives skim-readers)
+- [ ] No income claims, no "this changed my life" energy, no fake scarcity
+
+## Failure modes
+Drifting into a generic "50 AI tips" listicle; teaching prompts instead of the reference system; expert-from-above register; inventing a fake case study instead of using her style profile; padding to feel like "enough pages" (density is the value, not length).
+
+---
+
+# TASK 2 — REBUILD THE `tiktok-script-writer` SKILL (P0 · Opus 4.8 · Week 2)
+
+## ✅ DONE — 2026-07-24 (Opus 4.8)
+Rebuilt to spec: kept all voice rules verbatim; added the 4 pillars + posture, story thread, format templates (TH/VO/SD/BA/carousel/text), dashboard harvest workflow, episode serialisation, and 5 new real posted-script examples (G–K, the broadened positioning + best-friend register). Master file: `skills/tiktok-script-writer/SKILL.md`. Also mirrored to the app-managed live plugin copy + updated its `manifest.json` trigger description. **Deploy caveat:** the anthropic-skills plugin is app-managed and can re-sync/revert the live copy/manifest — project master is source of truth; re-copy if it reverts (see memory `reference-skill-deployment` + SESSION_LESSONS open-loop). Voice calibration folded back into `outputs/research/SESSION_LESSONS.md` §2/§5.
+
+## Objective
+The installed skill is hard-wired to the old niche: a single series ("how to use Claude for Creatives"), Claude-specific topics, script-only output. Positioning has broadened (Section 0). Rebuild it so every future scripting session — run by ANY model — produces on-voice scripts across all four pillars, all formats, integrated with the dashboard.
+
+## Session setup
+1. Section 0. 2. Invoke the existing `tiktok-script-writer` skill once and READ its full content — the voice rules inside it are gold and must survive. 3. `content-engine/ENGINE.md` (harvest questions), `WEEKLY_OS.md` (Day-2 workflow). 4. `CLAUDE.md` dashboard data-model section. 5. Use `/skill-creator` to produce/update the skill package.
+
+## Spec for the rebuilt skill
+- **Keep verbatim:** the entire voice identity, rhythm/punctuation rules (".." pauses, And/So starters), hooks doctrine (3 types, no-warmup), closes, word choices, banned lists, caption format, quality check, output format, read-aloud test.
+- **Change scope:** from "the Claude series" to "all Alison's TikTok content." The Claude/AI series becomes ONE recurring P2 format among many (AI in only ~1 in 3 posts). Add the broadened topic space: income-building without quitting, time-poverty systems, balance, quiet ambition, taste — anchored by the two moats (systems thinking + taste).
+- **Add — pillar awareness:** P1/P2/P3/P4 definitions (copy from `content-engine/ENGINE.md` — the retired `IDEA_INBOX.md` is no longer the source) with per-pillar posture notes (P1 = takes/opinions, P3 = identification-first mum-life that passes the sort test, P4 = evidence-anchored motivation, etc.).
+- **Add — format templates:** TH (talking-head), VO (voiceover over b-roll/stills), SD (screen demo), BA (before/after), carousel (slide-text spec, cover <10 words), text-on-screen. Format changes structure, not voice.
+- **Add — the harvest workflow:** input = Alison's voice-note dump of the week's experiment + shortlisted ideas from `dashboard/data.json` (status `shortlist`, read their `notes`); output = 7 scripts+captions matching the week's slots (no fixed pillar mix; craft floor holds) and format budget (2 TH, 2–3 VO, 1 carousel, 1 BA/SD); 10-min-edit rule stated in the skill.
+- **Add — story-thread rules:** the arc from Section 0; 2–3 hooks/week open from lived experience; identification before information; never make the employer identifiable; "you don't have to quit to start" is the account's core promise.
+- **Add — episode serialisation:** numbered-episode convention ("Building this without quitting — day N") where the idea's notes call for it.
+
+## Acceptance checklist
+- [ ] Old voice rules survive intact (diff against the original)
+- [ ] A P1 money-honesty post and a P2 taste-teardown both come out unmistakably in her voice
+- [ ] Skill reads `dashboard/data.json` shortlist rather than asking Alison what to write
+- [ ] AI-topic share lands at ~1 in 3 across a generated week
+- [ ] Skill description still triggers on "write the next post" / "script about X"
+
+## Failure modes
+Losing the ".." and fragment conventions in the rewrite; keeping the series-ID line mandatory on non-series posts; making the skill a rigid template-filler (the voice rules exist to be *applied*, scripts must still think); breaking dashboard JSON on read/write (fetch `sha` first per CLAUDE.md protocol; if unsure, read-only and tell Alison).
+
+---
+
+# TASK 3 — EMPLOYMENT CONTRACT REVIEW KIT (P0-gate · Sonnet · Week 3, BEFORE anything is sold)
+
+## Objective
+Alison is employed full-time in corporate Australia (QLD) and about to sell digital products under her own name. Produce a self-review kit so she can check her employment contract for landmines BEFORE the first paid offer. **This is a hard gate (Standing Rule R2).**
+
+## Output → `outputs/research/CONTRACT_REVIEW_KIT.md`
+1. **Clause checklist** — what to find and copy out of her contract: secondary employment / moonlighting; conflict of interest (define whether a creative-education business could even arguably conflict with her employer's business); **IP assignment** (the critical one — does the contract claim IP created outside hours? "in the course of employment" scope; any "related to employer's business" language); social media / public comment policy; confidentiality; non-compete/non-solicit scope; use of company time, equipment, systems (rule: NEVER film, edit, script, or store business files on the work laptop/phone — state this).
+2. **Decision tree:** clause silent → generally fine, document it; clause requires disclosure/approval → what a low-drama disclosure looks like and when it's needed; clause claims broad IP or prohibits secondary work → **stop, see a lawyer before selling**.
+3. **Red flags that need a real employment lawyer** (one consult, ~$300–500, cheap insurance) — list them explicitly.
+4. **General QLD/Australia context** — general information only, with a clear "this is not legal advice" disclaimer.
+5. **A private one-page summary template** she fills in: what her contract says, what she may do freely, what needs care, decided on [date].
+
+## Process note
+The session does NOT need her contract to build the kit. If she pastes clauses in afterwards, review them against the checklist — flag, don't conclude; recommend the lawyer whenever IP or conflict language is ambiguous.
+
+## Acceptance: covers all 7 clause areas; decision tree has no dead ends; disclaimer present; zero speculation presented as legal fact.
+
+---
+
+# TASK 4 — LEAD MAGNET + WELCOME SEQUENCE (P1 · Opus 4.8 · Weeks 4–5, requires Task 1 draft)
+
+## Objective
+The roadmap needs email capture live ~day 45. Build the free asset + the 5-email welcome sequence. The email list — not followers — is the business asset.
+
+## Session setup
+Section 0; the Task 1 product draft (`outputs/guides/PRODUCT_STYLE_REFERENCE_DRAFT.md`); `brand/MESSAGING_BANK.md`.
+
+## Spec
+- **Lead magnet → `outputs/guides/LEAD_MAGNET.md`:** carve the product's step (a) + the blank brief template into a genuinely useful free one-pager+ (working title: *"The 30-Minute Style Reference — stop getting generic AI images"*). It must deliver a real win alone, and make the paid guide the obvious next step without pitching hard. 600–1,000 words + template.
+- **Welcome sequence → `outputs/guides/WELCOME_SEQUENCE.md`:** 5 emails in her voice: (1) deliver the magnet + one-line who-she-is (still-in-corporate arc, one sentence, identification-first); (2) the story email — career that looks right/feels wrong, building on the side (no product mention); (3) the taste philosophy — direction beats generation; (4) a practical win — one workflow, complete, generous; (5) the soft offer — what the full guide adds, honest and small ("if it's useful, it's here"). Include subject lines (2 options each, no clickbait), send-day spacing (0/2/4/7/10), and exit criteria.
+- **Platform note:** MailerLite was the April-model choice and is still fine at this scale; free tier to 1K subscribers. Setup steps in an appendix, but the deliverable is the copy, not the setup.
+
+## Acceptance: magnet passes the "would this alone be worth following her for?" test; every email survives the calibration test; email 5 sales pressure ≈ zero; no "DM me"/"don't miss this" energy anywhere.
+
+---
+
+# TASK 5 — 90-DAY CONTENT ARCHITECTURE (P1 · Sonnet · Weeks 3–4)
+
+## Objective
+Turn the ~69-idea bank in `dashboard/data.json` into an architecture: recurring series with episode numbering, a hook-pattern library, and a 13-week pillar-mix scaffold — so every Day-2 harvest session starts 80% structured.
+
+## Session setup
+Section 0; `dashboard/data.json` (pull protocol per CLAUDE.md if env values are filled); `outputs/research/CREATOR_LANDSCAPE_TOPIC_ENGINE.md` (hook/format research); `content-engine/ENGINE.md`; `outputs/research/RESEARCH_LOG.md` if it exists (weekly research engine output).
+
+## Output → `content-engine/CONTENT_ARCHITECTURE.md`
+1. **Recurring series (4–6), each with:** name, pillar, format, cadence, episode-numbering convention, 5 example episodes drawn from actual bank ideas. Strong candidates already in the bank: *Building this without quitting — day N* (P1, arc-carrier); *The 90-minute workflow* (P2, timeboxed make); *Taste teardowns* (P2, slop vs not-slop in 60s); *Permission slips* (P4, evidence-anchored quiet-ambition); *Money honesty* (P1, small true numbers).
+2. **Hook-pattern library:** the ~8 patterns that fit her voice (bold claim, call-out-the-mistake, address-the-feeling, constraint-stated-plainly, contrarian-cost, small-true-number, "behind who exactly?" reframes), each with 3 worked examples from bank ideas.
+3. **13-week scaffold:** week rows × 7 slots, each slot = pillar + format + series-or-standalone; AI topics ~1 in 3; data-driven wildcard slots weekly. NOT specific topics per day — the dashboard week[] does that; this is the shape the harvest fills.
+4. **Dashboard tagging (optional, careful):** if writing to `data.json`, only append series tags into `notes` fields; fetch `sha` first; if anything is uncertain, output a tag list for Alison to apply in the dashboard UI instead.
+
+## Acceptance: every series maps to ≥5 real bank ideas; scaffold week respects 3/2/1/1 mix and format budget (2 TH / 2–3 VO / 1 carousel / 1 BA-SD); no invented ideas presented as hers.
+
+---
+
+# TASK 6 — STAGED-EXIT FINANCIAL MODEL (P1 · Sonnet + xlsx skill · Week 5)
+
+## Objective
+Turn the roadmap's triggers into a working spreadsheet so the 4-day-week and exit decisions are read off a dashboard, not vibes.
+
+## Output → `outputs/research/EXIT_MODEL.xlsx`
+- **Inputs tab:** salary (gross + net), household monthly expenses, buffer target (6 × expenses), product prices per rung. **ALL AS LABELLED BLANKS/PLACEHOLDERS — never invent her numbers; the sheet ships empty with a 5-minute fill-in guide.**
+- **Monthly tracker tab:** one row/month — revenue by rung (products, flagship, cohort, 1:1, B2B), email subs, hours worked; computed: total, % of net salary, 3-month rolling average.
+- **Triggers tab (the dashboard):** big clear cells — "4-day-week trigger: rolling 3-mo business income ≥ 20% net salary → [MET/NOT MET]"; "Exit trigger: ≥ $10K/mo for 6 consecutive months AND buffer ≥ target → [MET/NOT MET]"; months-of-buffer-banked gauge.
+- **Scenarios tab:** conservative/base/aggressive revenue curves over 24 months from simple drivers (audience size × conversion × price by rung — cite the assumptions used in `GROWTH_STRATEGY_1M.md`), showing when each trigger fires per scenario.
+- Formulas over hardcoding; a README cell block on each tab.
+
+## Acceptance: opens clean in Excel; fills in under 5 minutes; triggers compute correctly from tracker data (test with 6 rows of dummy data, then CLEAR the dummies); no fabricated financial figures anywhere.
+
+---
+
+# TASK 7 — MESSAGING BANK REFRESH (P2 · Opus 4.8 · Week 6)
+
+## Objective
+`brand/MESSAGING_BANK.md` predates the broadened positioning. Refresh approved voice lines to the two-moat, narrow-anchor/broad-topics frame without flattening her register.
+
+## Process
+Load Section 0, the current bank, `BRAND_SYSTEM.md`, and the 5 memory themes (time-poverty math, quiet ambition, permission, money honesty, taste/direction). Keep every line that still fits (mark KEPT); rewrite or retire the rest (mark; keep retired lines in an archive section); add new approved lines per theme — drawn from things she has actually said in scripts/ideas, not invented slogans. Every line passes the calibration test. **Show Alison the diff before saving.**
+
+## Acceptance: no hype vocabulary; nothing performative-declarative (the old system's known failure); themes covered evenly; the "engineer's systems + taste" moat present without corporate jargon.
+
+---
+
+# TASK 8 — B2B WORKSHOP OUTLINE (P3 · Sonnet · Month 3+, shelf asset)
+
+## Objective
+When inbound B2B interest arrives (roadmap month ~12), the answer should be "yes, here's the outline and price," not a scramble. Build the shelf asset now, cheaply.
+
+## Output → `outputs/guides/B2B_WORKSHOP_OUTLINE.md`
+Half-day (3.5h) workshop, "AI with taste for creative teams": module map (the style-reference system as the spine, team exercises, live make-along, taste-teardown of the team's own outputs, a systems session on repeatable briefs); pre-work checklist for the client; deliverables left behind (team style-reference templates); pricing guidance $2–5K AUD with the roadmap's pricing principles (never discount for prestige clients, price in conversation, when uncertain go higher); a one-paragraph description Alison can paste when someone asks. Requires Task 1 to exist (the spine). Flag: subject to Task 3 clearance.
+
+## Acceptance: deliverable in one afternoon of her prep; no claims of enterprise-training credentials she doesn't have; genuinely useful to a 5–15 person creative team.
+
+---
+
+# TASK 9 — PERSONAL FINANCE TRACKER (P3 · Sonnet · optional, spare blocks only)
+
+## Objective
+Wider-life build from her global instructions (finance). Lowest priority — do only when the streak is alive, tasks 1–6 are done, and a Day-6 block is genuinely free.
+
+## Output
+Either a tab added to `EXIT_MODEL.xlsx` (preferred — one financial home) or a standalone simple tracker: household budget vs actuals, savings-to-buffer progress, parents-fund line (Phase 6 — visible but not pressuring). Same rule: placeholders, never invented numbers. Keep it boring and 5-minutes-a-week maintainable.
+
+---
+
+# EXECUTION CALENDAR (Day-6 blocks; adjust to reality, never ahead of the streak)
+
+| Week (from 12 Jul) | Block spent on |
+|---|---|
+| 1 | Task 1 block 1 (product draft) |
+| 2 | Task 1 block 2 (revise) → Task 2 (skill rebuild) if time |
+| 3 | Task 2 finish + Task 3 (contract kit) |
+| 4 | Task 4 (lead magnet) + day-30 review happens this week |
+| 5 | Task 4 finish (sequence) + Task 6 (exit model) |
+| 6 | Task 5 (architecture) + Task 7 (messaging) |
+| 3mo+ | Task 8; Task 9 whenever |
+
+If a week's content production slips into Day 6, the task waits. The plan flexes; the streak doesn't.
+</script>
+
+<script type="text/markdown" id="src-orchestra">
+# Agent Orchestra Plan — Build-in-Public Series
+**Created:** 2026-07-18 · **Orchestrator:** Claude Fable 5 · **Status:** Ready to execute
+
+## What this is
+Fifteen build-in-public projects (income-side and balance-side builds for the time-poor
+women/mums audience), each broken into delegable subtasks for lower models, with the
+quality gates the orchestrator applies before any output is accepted. Say **"execute
+Build N"** in a session and the orchestrator will spawn the subagents per that build's
+brief, review their output against the gates, and hand back only approved work.
+
+**Reality check (standing):** `dashboard/data.json` `postLog` is empty as of 2026-07-18.
+No build in this file starts until post #1 is filmed. Build 6 is the exception — its
+day-1 episode can *be* post #1.
+
+---
+
+## Part 1 — Orchestration rules (apply to every build)
+
+### 1.1 Model routing
+
+| Task type | Model | Why |
+|---|---|---|
+| Research, competitor scans, data pulls, file scaffolding, HTML/JS/spreadsheet builds, JSON wrangling | **Sonnet 5** | Fast, cheap, excellent at bounded technical work with clear acceptance criteria |
+| Brand-facing copy, product content, scripts, naming, anything a customer or follower reads | **Opus 4.8** | Voice-sensitive work degrades fastest on smaller models; Opus holds register with good context |
+| Mechanical transforms (format conversion, checklist expansion, alt-text, file renames) | **Haiku 4.5** | Trivial work, no judgment required |
+| Positioning calls, pricing decisions, evidence/genericness judgment, final voice sign-off, anything ambiguous | **Orchestrator (Fable)** — never delegated | These are the failure points; a subagent can't know what it doesn't know |
+
+Routing heuristic: **delegate the verifiable, keep the debatable.** If output quality can
+be checked against a written criterion, delegate it. If checking it requires taste or
+context about Alison, it stays with the orchestrator.
+
+### 1.2 Mandatory context injection
+Subagents start cold — they see none of this conversation. Every delegated prompt MUST
+include, verbatim in the brief:
+
+1. **Audience line:** "Time-poor women, millennials and mums building sustainable income
+   without quitting or burning out. Energy-first, not demographic. AI is a tool in ~1 of
+   3 topics, never the constant subject."
+2. **Files to read before working** (paths are relative to project root):
+   - Any customer/follower-facing words → `brand/BRAND_SYSTEM.md` + `brand/MESSAGING_BANK.md`
+   - Visuals/design → `brand/STYLE_PROFILE.json` + `/brand-guidelines` skill
+   - Content targeting → `/target-audience` skill, `outputs/research/AUDIENCE_TERTIARY.md`
+   - TikTok scripts → the `tiktok-script-writer` skill (never freehand voice)
+3. **Voice guardrail (paste verbatim into copy briefs):** "Warm, conversational TikTok
+   register — talking to a creative she respects, not lecturing an audience. No
+   declarative authority voice, no hustle-culture phrasing, no 'girlboss', no
+   productivity-guru cadence. Small true numbers beat big claimed ones."
+4. **Constraint frame:** everything is built in ~90 min/day sessions, after bedtime.
+   Deliverables that assume a free weekend are automatically rejected.
+
+### 1.3 Quality gates (orchestrator review, before anything is accepted)
+Every subagent deliverable passes through, in order:
+
+- **G1 Spec check** — did it deliver exactly what the brief asked, in the file/location
+  named? Missing pieces → bounce back with the gap named, don't patch it yourself.
+- **G2 Voice check** — read 3 random sentences aloud. Test: *"Would Alison say this to a
+  creative she respects?"* One failure → return whole piece with the failing sentences
+  quoted. Never line-edit a voice failure; the rewrite must come from the subagent so the
+  register is consistent throughout.
+- **G3 Truth check** — every number, claim, and price is either Alison's real data or
+  clearly framed as an example. No invented testimonials, no implied results. Hard reject.
+- **G4 Constraint check** — could Alison actually execute/film this in the stated
+  time-box? If a "quick build" needs 6 hours, the brief was wrong; re-scope.
+- **G5 Evidence check** — Builds 7, 8, 12 & 15 only: is the framing anchored in Alison's
+  own specific evidence — a thing she actually built, ran, or measured — rather than
+  generic productivity/mum hacks anyone could have written? (Rewritten 2026-07-26: mum-life
+  is now a legitimate pillar in its own right (P3), so the old "productivity-hacks pillar was
+  excluded" rule no longer applies. What is still excluded is *genericness* — the failure
+  mode is a build that reads like the saturated "5 hacks for busy mums" category, not one
+  that touches mum territory at all.)
+
+Max 2 bounce cycles per subtask. A third failure means the brief is at fault — the
+orchestrator rewrites the brief, not the output.
+
+### 1.4 Delegation prompt template
+```
+ROLE: You are a [Sonnet 5/Opus 4.8] subagent for Alison Law's build-in-public series.
+CONTEXT: [audience line + constraint frame from 1.2]
+READ FIRST: [file list]
+TASK: [single bounded deliverable]
+OUTPUT: [exact path + format]
+ACCEPTANCE CRITERIA: [numbered, checkable list — the orchestrator rejects against these]
+DO NOT: invent numbers, invent testimonials, use hustle-culture voice, exceed scope.
+If information is missing, output QUESTIONS as a list instead of guessing.
+```
+
+### 1.5 Content capture (all builds)
+Each build is also a content series. Every subtask brief ends with a **capture note**:
+what Alison screenshots/films at that step (the messy middle, not just the result).
+Capture assets land in `outputs/visuals/build-N/`. Scripts for episodes are written by
+Opus 4.8 via the `tiktok-script-writer` skill, one episode per completed milestone,
+serialised ("Building X without quitting — day N" per i18).
+
+---
+
+## Part 2 — Build briefs
+
+Priority order: **1 → 6 → 9 → 2 → 3 → 4 → 10 → 15 → 12 → 11 → 5 → 13 → 14 → 8 → 7.**
+Run at most TWO builds concurrently (one income A-plot, one balance B-plot). Fifteen
+parallel builds is the preparation trap wearing a trench coat.
+
+**Origin note (2026-07-18):** Builds 11–15 were merged in from a second ideation pass.
+Five candidates from that pass were dropped as overlaps with existing builds: 11pm idea
+capture (covered by Build 6's idea-bank arc), batch week planner (Builds 8/10), personal
+income tracker (Build 4), idea vending machine (Build 6's research engine), and
+meal-plan-meets-work-plan (Build 8).
+
+---
+
+### Build 1 — Digital product, zero → first dollar (A-PLOT, start here)
+**The thing:** The style-reference guide (product candidate i32: "Build a style reference
+before you prompt") taken from outline to first sale, in public, nap-time by nap-time.
+**Why the audience cares:** the ending is a receipt. Real product, real listing, real
+first dollar — or an honest $0 update, which per i17 builds more trust than a win.
+
+| # | Subtask | Model | Deliverable |
+|---|---|---|---|
+| 1.1 | Market scan: 10 comparable digital products (AI-prompting/style guides for non-technical creatives), price points, format, what buyers complain about in reviews | Sonnet 5 | `outputs/research/BUILD1_MARKET_SCAN.md` |
+| 1.2 | Product outline: structure the guide (sections, exercises, before/after examples) from Alison's existing method in `skills/visual/` + `brand/STYLE_PROFILE.json` | Opus 4.8 | `outputs/guides/BUILD1_OUTLINE.md` |
+| 1.3 | Draft the guide content, section by section | Opus 4.8 | `outputs/guides/BUILD1_DRAFT.md` |
+| 1.4 | Design pass: PDF layout per `/brand-guidelines` FORMAT_PDF_GUIDE.md | Sonnet 5 | `outputs/guides/` PDF |
+| 1.5 | Sales page copy (short — one screen) + product name options (5, orchestrator picks with Alison) | Opus 4.8 | in chat, then `outputs/guides/BUILD1_SALES_COPY.md` |
+| 1.6 | Platform setup checklist (Gumroad or similar): exact clicks, in order, 20 min max | Sonnet 5 | checklist in chat |
+| 1.7 | Episode scripts at each milestone (outline done, ugly first draft, design day, listing live, first-sale-or-not update) | Opus 4.8 + `tiktok-script-writer` | in chat |
+
+**Orchestrator keeps:** pricing decision, product name final call, go/no-go on launch date.
+**Acceptance criteria highlights:** 1.3 — every technique must be demonstrably Alison's
+actual method (traceable to `skills/visual/` or `STYLE_PROFILE.json`), not generic
+prompting advice scraped from the internet. 1.5 — no urgency mechanics, no fake scarcity.
+**Capture notes:** screen-record the outline session; photograph the notebook; screenshot
+the $0 dashboard on day 1 (that's the episode-1 hook).
+**Kill criterion:** if 1.1 shows the niche saturated at <$10 price points, orchestrator
+pauses and re-scopes with Alison before 1.2.
+
+---
+
+### Build 2 — Minimum viable income machine (7 days)
+**The thing:** the least infrastructure needed to legally take money — bio, one small
+offer, payment link, delivery email. Built live over 7 daily episodes.
+**Why the audience cares:** kills "I need a website first."
+
+| # | Subtask | Model | Deliverable |
+|---|---|---|---|
+| 2.1 | Research: minimum legal/practical setup for selling digital goods as an Australian sole trader (ABN, GST threshold, platform fees compared) | Sonnet 5 | `outputs/research/BUILD2_SETUP_FACTS.md` |
+| 2.2 | The 7-day plan: one 90-min task per day, sequenced | Sonnet 5 | `outputs/research/BUILD2_7DAY_PLAN.md` |
+| 2.3 | Bio + offer one-liner + delivery email copy | Opus 4.8 | in chat |
+| 2.4 | Episode scripts (7, one per day) | Opus 4.8 + `tiktok-script-writer` | in chat |
+
+**Orchestrator keeps:** which offer goes in the machine (depends on Build 1 state).
+**Gate emphasis:** G3 on 2.1 — tax/legal facts must cite sources; flag anything uncertain
+for Alison to verify with a human, never assert. G4 on 2.2 — every day genuinely ≤90 min.
+**Capture:** day 7 is a single take: "7 days ago this didn't exist" + the working link.
+
+---
+
+### Build 3 — "What should I charge?" calculator
+**The thing:** a single-page web calculator (hours × real costs × the tax people forget),
+built with engineer logic, shown being built.
+**Why the audience cares:** time-poor women chronically undercharge; the math is the lesson.
+
+| # | Subtask | Model | Deliverable |
+|---|---|---|---|
+| 3.1 | The pricing model itself: inputs, formula, edge cases (GST, platform fees, self-employment buffer), written as a spec BEFORE any code | Sonnet 5 | `outputs/research/BUILD3_PRICING_MODEL.md` |
+| 3.2 | Single-file HTML calculator, brand palette from `BRAND_SYSTEM.md`, mobile-first (audience is on phones) | Sonnet 5 | `outputs/tools/charge-calculator.html` |
+| 3.3 | Verify in browser: every input combination in the spec, mobile viewport, dark mode | Sonnet 5 (verification workflow) | screenshots |
+| 3.4 | Episode scripts: the spec episode ("I priced it like an engineer"), the build episode, the launch episode | Opus 4.8 + `tiktok-script-writer` | in chat |
+
+**Orchestrator keeps:** formula sign-off (3.1 reviewed line by line — a wrong pricing
+formula shipped to this audience is a trust-ending event), disclaimer wording ("this is
+math, not financial advice").
+**Gate emphasis:** G3 is existential here. Also: calculator gives NO personalised
+financial advice — it computes, Alison narrates.
+
+---
+
+### Build 4 — Public second-income dashboard
+**The thing:** a public tracker — hours in, dollars out, updated weekly with real numbers.
+**Why the audience cares:** small true numbers out-trust big claimed ones (i17).
+
+| # | Subtask | Model | Deliverable |
+|---|---|---|---|
+| 4.1 | Extend `dashboard/data.json` schema: `incomeLog[]` (date, source, amountAUD, hoursIn) — additive only, must not break existing app or sync | Sonnet 5 | schema PR + migration note |
+| 4.2 | Public read-only view page (separate from private dashboard — shows ONLY income/hours, never the idea bank) | Sonnet 5 | `dashboard/public.html` |
+| 4.3 | Weekly update ritual: 5-min checklist for logging + posting the number | Sonnet 5 | added to `content-engine/WEEKLY_OS.md` |
+| 4.4 | Episode script for the launch ("I'm publishing my numbers, including the zeros") | Opus 4.8 + `tiktok-script-writer` | in chat |
+
+**Orchestrator keeps:** privacy line — exactly which numbers go public (Alison decides;
+default: side-income only, NEVER salary, NEVER client names).
+**Gate emphasis:** 4.1/4.2 must respect the GitHub sync protocol in CLAUDE.md (fetch sha
+before PUT) and never leak the private repo token into the public page. Verify with the
+browser workflow before accepting.
+**Dependency:** pointless until Builds 1/2 produce a number. Schedule after first listing
+is live.
+
+---
+
+### Build 5 — Etsy printable in one week of stolen hours
+**The thing:** idea → AI-assisted design (Alison's taste as QC) → listed on Etsy →
+first-dollar-or-not, in ~5 sessions.
+**Why the audience cares:** live proof of "you bring the taste, AI brings the speed" (i14)
+with an income experiment attached.
+
+| # | Subtask | Model | Deliverable |
+|---|---|---|---|
+| 5.1 | Niche scan: printable categories where design taste is the differentiator (not keyword-stuffed commodity), realistic first-month expectations from seller communities | Sonnet 5 | `outputs/research/BUILD5_NICHE_SCAN.md` |
+| 5.2 | Generate design candidates via `/visual` skill flow (stage-gated as that skill requires) | per skill | `outputs/visuals/build-5/` |
+| 5.3 | Listing copy + honest tags | Opus 4.8 | in chat |
+| 5.4 | Episode scripts (niche pick, taste-QC session showing rejects, listing day, results update) | Opus 4.8 + `tiktok-script-writer` | in chat |
+
+**Orchestrator keeps:** the taste call on 5.2 is ALISON's on camera — that's the whole
+premise; subagents only generate candidates. Etsy account creation and listing submission
+are Alison's hands, not an agent's.
+**Gate emphasis:** G3 on 5.1 — report the median seller reality (mostly $0 first month),
+not survivor stories. The honest framing IS the content.
+**Risk note:** overlaps Build 1's arc (two "first dollar" quests reads repetitive). Run
+only after Build 1 concludes, or fold in as its sequel.
+
+---
+
+### Build 6 — The 90-minute content engine, shown (B-PLOT, zero build cost)
+**The thing:** the system that already exists — dashboard, idea bank, research engine,
+weekly OS — explained as "how a chemical engineer makes daily posting possible in 90
+min/day." Already in the idea bank as i42.
+**Why the audience cares:** it's the meta-proof of the entire promise, and it's real.
+
+| # | Subtask | Model | Deliverable |
+|---|---|---|---|
+| 6.1 | System map: one diagram of the engine (idea capture → research engine → weekly harvest → scripting → posting → scorecard) readable in a 3-second TikTok freeze-frame | Sonnet 5 | `outputs/visuals/build-6/engine-map.png` + source |
+| 6.2 | Episode breakdown: split the system into 5–6 sixty-second episodes, each ending with one takeaway a viewer can copy WITHOUT Claude (principle, not tool — per i15) | Opus 4.8 | `outputs/research/BUILD6_EPISODES.md` |
+| 6.3 | Scripts for episodes 1–2 | Opus 4.8 + `tiktok-script-writer` | in chat |
+| 6.4 | Screen-capture shot list: what to record in the actual dashboard (blur/crop the idea bank — competitive info) | Sonnet 5 | in chat |
+
+**Orchestrator keeps:** the "AI is 1-in-3 topics" balance — this build is AI-adjacent, so
+it must not dominate the calendar; interleave with non-AI posts.
+**Gate emphasis:** G2 hard — this topic tempts guru voice ("my SYSTEM for CONTENT at
+SCALE"). It's a mum showing her kitchen, not a masterclass.
+**Note:** fastest path to post #1 of any build here. Day-1 episode requires zero new
+assets — the system already exists.
+
+---
+
+### Build 7 — School/kids admin killer ⚠ genericness-risk build
+**The thing:** Claude reads the daycare newsletter + school emails, outputs a calendar
+and a "what you actually need to do" list. Built and shown as Alison solving HER OWN
+mental load, not as a productivity tip.
+
+| # | Subtask | Model | Deliverable |
+|---|---|---|---|
+| 7.1 | Workflow design: input (forwarded email/photo of newsletter) → Claude prompt → output format (dated action list). Must work in the Claude app with zero technical setup — the audience won't run scripts | Sonnet 5 | `outputs/research/BUILD7_WORKFLOW.md` |
+| 7.2 | The reusable prompt itself, tested against 3 real (anonymised) newsletter samples Alison provides | Sonnet 5 | `outputs/prompts/kid-admin-prompt.md` |
+| 7.3 | Episode script — framed as story ("Sunday night, 14 unread daycare emails") not tips | Opus 4.8 + `tiktok-script-writer` | in chat |
+
+**Orchestrator keeps:** G5 evidence judgment on every piece of copy — one "5 hacks" framing
+and it's rejected. Also privacy: real newsletters must be anonymised by ALISON before any
+subagent sees them (kids' names, school name, other families).
+**Acceptance criteria highlight:** 7.2 tested on real samples, not hypothetical ones — a
+prompt that works on imagined newsletters is worthless.
+
+---
+
+### Build 8 — Sunday 20-minute weekly reset ⚠ genericness-risk build
+**The thing:** one sitting that plans the family week and the content week together.
+Recurring filmable format ("reset with me, episode N").
+
+| # | Subtask | Model | Deliverable |
+|---|---|---|---|
+| 8.1 | The reset checklist: merge the existing `content-engine/WEEKLY_OS.md` harvest block with family-week planning into one 20-min sequence — genuinely 20 min (G4: time each step) | Sonnet 5 | addition to `content-engine/WEEKLY_OS.md` |
+| 8.2 | One-page printable version (brand palette) — doubles as a free lead magnet later | Sonnet 5 | `outputs/guides/weekly-reset.pdf` |
+| 8.3 | First two "reset with me" episode scripts | Opus 4.8 + `tiktok-script-writer` | in chat |
+
+**Orchestrator keeps:** G5 framing check; the decision on whether 8.2 becomes a lead
+magnet (that's a funnel decision, not a subagent call).
+**Gate emphasis:** G4 — if the honest timing is 40 minutes, publish it as 40 minutes.
+The audience has been lied to about "quick" routines enough.
+
+---
+
+### Build 9 — Time-audit tool: "find your 90 minutes"
+**The thing:** a simple tool/worksheet showing where the week actually leaks —
+operationalises the 8-5-not-5-9 post (i43) into something usable.
+
+| # | Subtask | Model | Deliverable |
+|---|---|---|---|
+| 9.1 | The audit method: 168-hour honest inventory adapted for primary-caretaker reality (interrupted time ≠ free time — a nap window is 40 usable minutes, not 60) | Opus 4.8 | `outputs/research/BUILD9_METHOD.md` |
+| 9.2 | Interactive single-file HTML version (same stack/standards as Build 3) + printable fallback | Sonnet 5 | `outputs/tools/time-audit.html` + PDF |
+| 9.3 | Browser verification, mobile-first | Sonnet 5 | screenshots |
+| 9.4 | Episode scripts: Alison runs the audit on HERSELF first, on camera, and publishes her own leak list before asking anyone else to | Opus 4.8 + `tiktok-script-writer` | in chat |
+
+**Orchestrator keeps:** the "interrupted time" coefficients in 9.1 — this is the
+insight that makes the tool hers (engineer-brain applied to mum-time); review hard.
+**Why priority 3:** directly extends the already-scheduled day-3 post, low build cost,
+pure balance-side (offsets AI-heavy Builds 1 and 6 in the topic mix).
+
+---
+
+### Build 10 — "Batch it once" filming system
+**The thing:** the setup + checklist that gets 5 posts filmed in one nap window —
+content about making content sustainable.
+
+| # | Subtask | Model | Deliverable |
+|---|---|---|---|
+| 10.1 | The batch protocol: pre-flight checklist (lighting spot, shot list from the week's dashboard slots, outfit-swap trick, file naming so edits don't eat a second session) | Sonnet 5 | `outputs/research/BUILD10_PROTOCOL.md` |
+| 10.2 | Dashboard tie-in: a "batch day" view/filter showing the week's planned slots as a shot list (additive change, don't break sync) | Sonnet 5 | dashboard change |
+| 10.3 | Episode script: film the batch session itself (the system demonstrating itself — the recursion is the hook) | Opus 4.8 + `tiktok-script-writer` | in chat |
+
+**Orchestrator keeps:** nothing strategic — lightest build here. Good filler between
+heavier arcs.
+**Dependency:** only credible AFTER Alison has batched at least once for real. Do not
+script 10.3 from imagination; the protocol gets tested by her first, revised from what
+actually happened, then filmed.
+
+---
+
+### Build 11 — DM triage system: enquiries that don't eat the evening
+**The thing:** templated replies + a simple triage rule ("book / nurture / decline")
+so client enquiries and audience DMs get handled in one 15-min daily window instead of
+leaking across the whole night. Built and shown as Alison protecting her own evenings.
+**Why the audience cares:** "income without burnout" dies in the DMs first — the follow-up
+anxiety is the burnout. Directly serves the balance promise with an income-side mechanism.
+
+| # | Subtask | Model | Deliverable |
+|---|---|---|---|
+| 11.1 | Triage decision tree: classify incoming messages (client enquiry / collab pitch / audience question / spam-adjacent) → one action each, drawn from `outputs/research/AUDIENCE_TERTIARY.md` + `/target-audience` skill | Sonnet 5 | `outputs/research/BUILD11_TRIAGE_TREE.md` |
+| 11.2 | Reply template bank: 8–10 templates (enquiry holding reply, discovery-call booking, polite decline, "not a fit" referral, audience-question deflection to content) — every one in Alison's register | Opus 4.8 | `outputs/research/BUILD11_TEMPLATES.md` |
+| 11.3 | The 15-min daily ritual: where it slots in `content-engine/WEEKLY_OS.md`, with the hard stop written in | Sonnet 5 | addition to `content-engine/WEEKLY_OS.md` |
+| 11.4 | Episode script — story-framed ("I answered a DM at 9:40pm and lost my whole evening") | Opus 4.8 + `tiktok-script-writer` | in chat |
+
+**Orchestrator keeps:** the decline template's final wording (a graceless "no" from a
+template is a reputation risk — Alison signs off every template before it's used on a
+real human), and the triage boundary between "client enquiry" and "audience member"
+(that's an AUDIENCE_PRIMARY vs TERTIARY call).
+**Gate emphasis:** G2 hard on 11.2 — templates are the highest-exposure copy in this
+plan; they land in real people's inboxes, not on a feed. One canned-sounding line kills
+the warm register the account runs on.
+**Capture:** screen-record a real (anonymised) triage session — the before-pile and the
+cleared-in-15-minutes after. Real DM content blurred/anonymised by ALISON before filming.
+
+---
+
+### Build 12 — Boundary auto-responder: "I don't answer after 6pm" ⚠ genericness-risk build
+**The thing:** the after-hours boundary, built as a system, not declared as an intention —
+auto-reply / status message + the personal rule that makes it stick. Filmable in one
+episode with a strong hook.
+**Why the audience cares:** most boundary content is affirmations; this is a boundary with
+infrastructure. Very shareable, zero tech intimidation, pure balance-side.
+
+| # | Subtask | Model | Deliverable |
+|---|---|---|---|
+| 12.1 | Mechanics survey: what after-hours auto-response is actually possible per channel the audience uses (Instagram/TikTok DMs, email, WhatsApp Business) — what's automatable vs what stays a manual rule; no tool that costs money or needs a business account she doesn't have | Sonnet 5 | `outputs/research/BUILD12_MECHANICS.md` |
+| 12.2 | The auto-reply copy itself + the "boundary contract" (3 personal rules that back the auto-reply, honest about exceptions — sick kids trump boundaries) | Opus 4.8 | in chat, then `outputs/research/BUILD12_COPY.md` |
+| 12.3 | Episode script — story-first ("the message that made me build a wall with a nice sign on it"), NOT a tips listicle | Opus 4.8 + `tiktok-script-writer` | in chat |
+
+**Orchestrator keeps:** G5 judgment — this build is one bad framing away from
+girlboss-boundary content, which is exactly the register the voice memory forbids. Also
+the exceptions list in 12.2: an absolutist boundary reads as performance; the honest
+version ("here's when I break my own rule") is the trust play.
+**Gate emphasis:** G3 on 12.1 — channel capabilities change; every claim about what
+Instagram/WhatsApp can auto-do must be verified current, not remembered. G1: if a channel
+can't automate it, say so plainly — "this one is willpower" is an acceptable finding.
+**Capture:** the auto-reply firing in real time (send a test DM on camera at 6:01pm).
+**Sequencing note:** natural companion episode to Build 11 — triage handles the volume,
+this handles the clock. Can ship as a two-parter.
+
+---
+
+### Build 13 — One-page brand kit generator
+**The thing:** a fill-once, use-forever one-pager (palette, two fonts, logo lockup, 3
+voice lines, do/don't examples) so she's never redesigning from scratch per graphic —
+Alison builds the template from her own brand system, then shows how anyone fills theirs.
+**Why the audience cares:** the audience loses hours re-deciding visual choices per post;
+"decide once" is engineer-brain applied to creative work — both moats in one build.
+
+| # | Subtask | Model | Deliverable |
+|---|---|---|---|
+| 13.1 | Template structure: distil `brand/BRAND_SYSTEM.md` into the 7±2 decisions that actually recur for a solo creator (everything else is noise), each with a worked example from Alison's own kit | Opus 4.8 | `outputs/guides/BUILD13_TEMPLATE_SPEC.md` |
+| 13.2 | Fillable one-pager: single-file HTML form that live-previews choices and prints/exports to one page (same stack/standards as Build 3), plus a static PDF fallback per `/brand-guidelines` FORMAT_PDF_GUIDE.md | Sonnet 5 | `outputs/tools/brand-kit.html` + PDF |
+| 13.3 | Browser verification, mobile-first, print layout checked | Sonnet 5 | screenshots |
+| 13.4 | Episode scripts: "I made 47 font decisions last month. Now I make zero" (the decide-once story), then the fill-it-live episode | Opus 4.8 + `tiktok-script-writer` | in chat |
+
+**Orchestrator keeps:** which of Alison's real brand decisions get shown publicly (her
+kit is the worked example — that's deliberate, but the exact exposure is her call), and
+whether 13.2 graduates into a paid product or lead magnet (funnel decision, same as 8.2).
+**Gate emphasis:** G4 on 13.1 — if filling the template takes a weekend, it failed its
+own premise; target one nap window to complete. G2 on 13.4 — "decide once" tempts
+productivity-guru cadence.
+**Dependency/risk:** product-adjacent to Build 1 (two "guide-shaped things" in flight
+reads repetitive). Run after Build 1's arc concludes, or position explicitly as the free
+companion to it.
+
+---
+
+### Build 14 — Client onboarding kit that runs itself
+**The thing:** welcome email + contract template + intake form, pre-assembled, so a new
+client goes from "yes" to "started" without Alison reinventing admin at 10pm. Built once,
+shown working on the next real client.
+**Why the audience cares:** the invisible admin between "got the client" and "did the
+work" is unpaid hours — killing it is a direct income-per-hour raise. Speaks straight to
+"income without the overwhelm."
+
+| # | Subtask | Model | Deliverable |
+|---|---|---|---|
+| 14.1 | Onboarding sequence map: the minimum steps from "yes" to "project started" for a solo creative doing visual/content work in Australia (what's legally sensible in a contract vs overkill; where a simple template suffices vs where a human/lawyer is flagged) | Sonnet 5 | `outputs/research/BUILD14_SEQUENCE.md` |
+| 14.2 | The kit copy: welcome email, intake questionnaire (drawn from `/target-audience` discovery-call material), project-kickoff checklist | Opus 4.8 | `outputs/research/BUILD14_KIT.md` |
+| 14.3 | Contract template annotation: a plain-English walkthrough of a standard AU freelance template — what each clause is for — explicitly framed as "understand it, then get it checked," never as legal advice | Sonnet 5 | `outputs/research/BUILD14_CONTRACT_NOTES.md` |
+| 14.4 | Episode script — before/after framed ("last client: 4 hours of admin. This client: 20 minutes") | Opus 4.8 + `tiktok-script-writer` | in chat |
+
+**Orchestrator keeps:** the legal line — 14.3 ships with an unmissable "not legal advice,
+have a professional check your contract" frame, wording signed off by the orchestrator;
+anything a subagent asserts about AU contract law gets flagged for human verification,
+same standard as 2.1.
+**Gate emphasis:** G3 existential on 14.1/14.3 (same class as Build 2's setup facts).
+G4 on the kit itself: assembling it must fit ~2 sessions.
+**Dependency:** the episode's proof requires a real next client. Build the kit any time;
+film the payoff episode only when a genuine onboarding happens — do not stage one.
+
+---
+
+### Build 15 — Burnout early-warning check-in ⚠ genericness-risk build
+**The thing:** a 5-question weekly self-audit (sleep debt, resentment flag, skipped
+meals/exercise, "did I enjoy any of it," leading-indicator score) that flags overcommit
+BEFORE the crash — an engineer's control chart applied to her own capacity. Simple form
+or printable; rigour is the differentiator, not the tech.
+**Why the audience cares:** nobody in this space builds *for* burnout prevention — it's
+all recovery-after content. Leading-indicators-not-lagging is the systems moat stated in
+one build. Highest differentiation play in this file.
+
+| # | Subtask | Model | Deliverable |
+|---|---|---|---|
+| 15.1 | The instrument: 5 questions max, each tied to a named early indicator with the reasoning written out (why this signal leads a crash by weeks), scoring bands and ONE prescribed action per band ("amber = cancel one thing this week") — grounded in reputable burnout research, cited | Opus 4.8 | `outputs/research/BUILD15_INSTRUMENT.md` |
+| 15.2 | Weekly form: single-file HTML (same stack as Builds 3/9) that scores locally, stores history in localStorage, shows the 8-week trend line — no accounts, no data leaves the phone; plus printable fallback | Sonnet 5 | `outputs/tools/burnout-checkin.html` + PDF |
+| 15.3 | Browser verification incl. localStorage persistence across sessions, mobile-first | Sonnet 5 | screenshots |
+| 15.4 | Ritual integration: attach to the existing weekly scorecard rhythm in `content-engine/SCORECARD.md` (never daily — same rule as the scorecard itself) | Sonnet 5 | addition to `content-engine/SCORECARD.md` |
+| 15.5 | Episode scripts: Alison scores HERSELF on camera first and publishes her own number, including an amber week if that's the truth (same publish-your-own-result rule as 9.4) | Opus 4.8 + `tiktok-script-writer` | in chat |
+
+**Orchestrator keeps:** the entire clinical boundary — this is a self-awareness tool,
+never a diagnostic; the "if you're consistently red, that's a conversation with a
+professional, not a productivity fix" line is mandatory, orchestrator-worded, and G3-hard.
+Also the question set in 15.1: wrong questions make a wellness-theatre gadget; the
+engineer-rigour framing only holds if the indicators genuinely lead.
+**Gate emphasis:** G5 — one slip into wellness-influencer register ("protect your peace
+babe") and the piece bounces. G2's read-aloud test applies double here: this is the most
+personal topic in the plan and the fastest to ring false.
+**Sequencing note:** strongest paired with Build 9 (time audit finds the 90 minutes;
+this checks the 90 minutes isn't costing her). Balance-side anchor for whenever the
+calendar runs AI-heavy.
+
+---
+
+## Part 3 — Sequencing and cadence
+
+```
+Week 1:   Build 6 (ep 1 = post #1 candidate) ──┐
+Week 1-3: Build 1 (A-plot, 2 sessions/wk)      ├─ max 2 concurrent
+Week 2:   Build 9 (1 session, balance offset)  ┘
+Week 3-4: Build 2 (uses Build 1's product as the offer)
+Week 4+:  Build 4 (once there's a number), Build 3, Build 10
+Week 5+:  Build 15 (balance anchor, pairs with Build 9's audit),
+          Builds 12+11 as a boundaries two-parter (clock + volume)
+Later:    Build 5 (sequel to Build 1), Build 13 (free companion after Build 1
+          concludes), Build 14 (build any time, film only on a real client),
+          Builds 7-8 (genericness-risk, only if the audience signals demand
+          in comments)
+```
+
+**Standing rules:**
+- No new build starts while another has an unfinished public arc — open loops are
+  follow-drivers only while they're moving.
+- Weekly scorecard (`content-engine/SCORECARD.md`) decides continuation: a build whose
+  episodes underperform for 2 weeks gets an honest wrap-up episode, not a quiet abandonment.
+- Every orchestration session begins with the shipping check: **did she post today?**
+  If no, today's 90 minutes go to filming, not to subagents.
+</script>
+
+<script>
+/* ---- minimal markdown → HTML renderer (headers, bold/italic, links, code,
+   tables, lists, blockquote, hr, fenced code, checkboxes) ---- */
+function escHtml(s){ return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+function inline(s){
+  s = escHtml(s);
+  s = s.replace(/`([^`]+)`/g, '<code>$1</code>');
+  s = s.replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" target="_blank" rel="noopener">$1</a>');
+  s = s.replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>');
+  s = s.replace(/\*([^*]+)\*/g, '<em>$1</em>');
+  return s;
+}
+function renderMarkdown(md){
+  const lines = md.replace(/\r\n/g,'\n').split('\n');
+  let html = '', i = 0, pendingSubH = false;
+  let inList = null; // 'ul' | 'ol'
+  function closeList(){ if(inList){ html += `</${inList}>`; inList = null; } }
+  while(i < lines.length){
+    let line = lines[i];
+    if(/^\s*$/.test(line)){ closeList(); i++; continue; }
+    if(/^```/.test(line)){
+      closeList(); pendingSubH = false;
+      let code = []; i++;
+      while(i < lines.length && !/^```/.test(lines[i])){ code.push(lines[i]); i++; }
+      i++; // skip closing fence
+      html += `<pre class="codeblock"><code>${escHtml(code.join('\n'))}</code></pre>`;
+      continue;
+    }
+    if(/^---+\s*$/.test(line)){ closeList(); pendingSubH = false; html += '<hr>'; i++; continue; }
+    let m;
+    if((m = line.match(/^\s*[-*]\s+\[( |x|X)\]\s+(.*)/))){
+      pendingSubH = false;
+      if(inList !== 'ul'){ closeList(); html += '<ul>'; inList = 'ul'; }
+      html += `<li class="task">${m[1].trim()?'☑':'☐'} ${inline(m[2])}</li>`; i++; continue;
+    }
+    if((m = line.match(/^###\s+(.*)/))){ closeList(); pendingSubH = false; html += `<h3>${inline(m[1])}</h3>`; i++; continue; }
+    if((m = line.match(/^##\s+(.*)/))){
+      closeList();
+      if(pendingSubH){ html += `<h2 class="sub-h">${inline(m[1])}</h2>`; pendingSubH = false; }
+      else html += `<h2>${inline(m[1])}</h2>`;
+      i++; continue;
+    }
+    if((m = line.match(/^#\s+(.*)/))){ closeList(); html += `<h1>${inline(m[1])}</h1>`; pendingSubH = true; i++; continue; }
+    if((m = line.match(/^>\s?(.*)/))){
+      closeList(); pendingSubH = false;
+      let bq = [m[1]]; i++;
+      while(i < lines.length && /^>\s?/.test(lines[i])){ bq.push(lines[i].replace(/^>\s?/,'')); i++; }
+      html += `<blockquote>${bq.map(inline).join('<br>')}</blockquote>`;
+      continue;
+    }
+    if(/^\|/.test(line)){
+      closeList(); pendingSubH = false;
+      let rows = [];
+      while(i < lines.length && /^\|/.test(lines[i])){ rows.push(lines[i]); i++; }
+      rows = rows.filter(r => !/^\|[\s:|-]+\|$/.test(r.trim()));
+      const cells = r => r.replace(/^\||\|$/g,'').split('|').map(c=>c.trim());
+      const head = cells(rows[0]);
+      const body = rows.slice(1).map(cells);
+      html += '<div class="doc-table-wrap"><table><thead><tr>' +
+        head.map(h=>`<th>${inline(h)}</th>`).join('') + '</tr></thead><tbody>' +
+        body.map(r=>'<tr>'+r.map(c=>`<td>${inline(c)}</td>`).join('')+'</tr>').join('') +
+        '</tbody></table></div>';
+      continue;
+    }
+    if((m = line.match(/^\s*[-*]\s+(.*)/))){
+      pendingSubH = false;
+      if(inList !== 'ul'){ closeList(); html += '<ul>'; inList = 'ul'; }
+      html += `<li>${inline(m[1])}</li>`; i++; continue;
+    }
+    if((m = line.match(/^\s*\d+\.\s+(.*)/))){
+      pendingSubH = false;
+      if(inList !== 'ol'){ closeList(); html += '<ol>'; inList = 'ol'; }
+      html += `<li>${inline(m[1])}</li>`; i++; continue;
+    }
+    // plain paragraph — accumulate following non-blank plain lines
+    closeList(); pendingSubH = false;
+    let para = [line]; i++;
+    while(i < lines.length && !/^\s*$/.test(lines[i]) && !/^(#{1,3}\s|>|---+\s*$|\|)/.test(lines[i]) && !/^\s*[-*]\s+/.test(lines[i]) && !/^\s*\d+\.\s+/.test(lines[i])){
+      para.push(lines[i]); i++;
+    }
+    const isMeta = /^(Created|Companion to|Built)/.test(para[0]);
+    html += `<p class="${isMeta?'meta-line':''}">${para.map(inline).join(' ')}</p>`;
+  }
+  closeList();
+  return html;
+}
+
+const DOC_META = {
+  engine:   { title: 'Content engine',    sub: 'One experiment → a week of posts' },
+  research: { title: 'Research engine',   sub: 'Weekly idea supply, ≤45 min/week' },
+  weeklyos: { title: 'Weekly operating system', sub: '90 minutes a day, 1 post/day' },
+  growth:   { title: 'Growth strategy',   sub: '0 → 1M followers' },
+  roadmap:  { title: 'Long-term roadmap', sub: 'The freedom-led career' },
+  handoff:  { title: 'Fable handoff plan', sub: 'Priority builds + self-contained sub-agent briefs' },
+  orchestra:{ title: 'Agent orchestra plan', sub: 'Multi-agent build plan' },
+};
+
+document.querySelectorAll('script[type="text/markdown"]').forEach(el => {
+  const key = el.id.replace('src-','');
+  document.getElementById('doc-'+key).innerHTML = renderMarkdown(el.textContent.trim());
+});
+
+function showDoc(key){
+  document.querySelectorAll('.doc').forEach(d => d.classList.remove('active'));
+  document.getElementById('doc-'+key).classList.add('active');
+  document.querySelectorAll('nav button').forEach(b => b.classList.toggle('active', b.dataset.doc===key));
+  document.getElementById('hdTitle').textContent = DOC_META[key].title;
+  document.getElementById('hdSub').textContent = DOC_META[key].sub;
+  window.scrollTo(0,0);
+  history.replaceState(null,'','#'+key);
+}
+document.querySelectorAll('nav button').forEach(b => b.addEventListener('click', () => showDoc(b.dataset.doc)));
+
+const initial = (location.hash||'').replace('#','');
+showDoc(DOC_META[initial] ? initial : 'engine');
+</script>
+</body>
+</html>
