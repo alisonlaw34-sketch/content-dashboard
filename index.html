@@ -112,6 +112,10 @@
   .nd-close:hover{border-color:var(--border-strong); color:var(--text-primary);}
   .notes-drawer textarea{flex:1; width:100%; border:none; border-radius:0; resize:none; padding:18px 20px; font-size:15px; line-height:1.7; min-height:0;}
   .notes-drawer textarea:focus{outline:none;}
+  .notes-drawer{height:100dvh; height:var(--editor-height,100dvh); top:var(--editor-top,0px); z-index:60; overflow:hidden;}
+  .notes-drawer textarea{overflow-y:auto; overscroll-behavior:contain; touch-action:pan-y; -webkit-overflow-scrolling:touch; font-size:16px; padding-bottom:max(24px,env(safe-area-inset-bottom));}
+  .research-badge{color:var(--purple); background:var(--purple-tint); padding:3px 7px; border-radius:var(--radius-pill);}
+  @media(max-width:768px){.idea{flex-wrap:wrap;} .idea .body{min-width:0;} .idea .acts{flex-wrap:wrap; margin-left:auto;} .notes-drawer{width:100%; max-width:100%;}}
 
   /* ---- reorder arrows ---- */
   .week-row{margin-bottom:16px;}
@@ -270,6 +274,7 @@
     </div>
     <input id="search" placeholder="Search ideas…" autocomplete="off">
     <div class="filters" id="filters">
+      <button data-f="research">Researched</button>
       <button data-f="all" class="sel">All</button>
       <button data-f="P1">P1 · Opinion</button>
       <button data-f="P2">P2 · Teaching</button>
@@ -1545,6 +1550,7 @@ function toast(msg){ const t=$('#toast'); t.textContent=msg; t.style.display='bl
 
 /* ================= persistence + sync ================= */
 function saveLocal(){
+  rememberResearchSources();
   localStorage.setItem(LS_DATA, JSON.stringify(data));
   localStorage.setItem(LS_DIRTY, '1');
   setDot(cfg ? 'pending' : '');
@@ -1685,6 +1691,7 @@ function renderWeek(){
         <div class="dc-title" contenteditable="plaintext-only" data-wtitle="${idx}" data-ph="Add a title…">${esc(s.title)}</div>
         <div class="stepper">${STAGES.map(st=>`<button data-stage="${idx}|${st}" class="${STAGES.indexOf(st)<=STAGES.indexOf(s.stage)?'on':''}">${st}</button>`).join('')}</div>
         <div class="dc-foot">
+          ${s.stage!=='posted' && (s.ideaId || s.title || s.notes || s.caption)?`<button class="linkbtn" data-returnidea="${idx}">Move back to Ideas</button>`:''}
           <label><input type="checkbox" data-posted="${idx}" ${s.stage==='posted'?'checked':''}> posted</label>
           <button class="linkbtn ${isNotesTarget('week',idx,undefined,'notes')?'on':''}" data-slotnotes="${idx}">script${s.notes?' •':''}</button>
           <button class="linkbtn ${isNotesTarget('week',idx,undefined,'caption')?'on':''}" data-slotcap="${idx}">caption${s.caption?' •':''}</button>
@@ -1695,10 +1702,12 @@ function renderWeek(){
 
 /* ================= ideas ================= */
 function renderIdeas(){
+  rememberResearchSources();
   const q = ($('#search').value||'').toLowerCase();
   let list = data.ideas.filter(i => {
     if(ideaFilter==='used') return i.status==='used';
     if(i.status==='used') return false;
+    if(ideaFilter==='research') return isResearched(i);
     if(ideaFilter==='em') return i.emergency;
     if(ideaFilter!=='all' && i.pillar!==ideaFilter) return false;
     return true;
@@ -1715,7 +1724,7 @@ function renderIdeas(){
       <span class="chip ${i.pillar}">${i.pillar}</span>
       <div class="body">
         <div class="txt">${esc(i.text)}</div>
-        <div class="meta">${i.added}${i.status==='shortlist'?' · <span style="color:var(--accent)">shortlisted</span>':''}${i.status==='scheduled'?' · <span style="color:var(--green)">this week</span>':''}${i.status==='used'?' · used':''}${i.notes?' · <span style="color:var(--accent)">script •</span>':''}${i.caption?' · <span style="color:var(--accent)">caption •</span>':''}</div>
+        <div class="meta">${isResearched(i)?'<span class="research-badge">Auto-researched</span>':''}${i.added}${i.status==='shortlist'?' · <span style="color:var(--accent)">shortlisted</span>':''}${i.status==='scheduled'?' · <span style="color:var(--green)">this week</span>':''}${i.status==='used'?' · used':''}${i.notes?' · <span style="color:var(--accent)">script •</span>':''}${i.caption?' · <span style="color:var(--accent)">caption •</span>':''}</div>
       </div>
       <div class="acts">
         ${i.status==='used'
@@ -1787,11 +1796,48 @@ function renderEmergencyShelves(){
   }
 }
 
+function isResearched(idea){
+  return idea.source==='auto-research' || /\bauto-harvest\b/i.test(idea.notes||'');
+}
+function rememberResearchSources(){
+  if(data) for(const idea of data.ideas) if(isResearched(idea)) idea.source='auto-research';
+}
+// Preserve the slot's latest work before removing or replacing it.
+function preserveSlot(s){
+  let idea = data.ideas.find(i=>i.id===s.ideaId);
+  if(!idea && !(s.title || s.notes || s.caption)) return null;
+  if(!idea){
+    idea={id:uid(), added:todayStr(), emergency:false, status:'inbox'};
+    data.ideas.push(idea);
+    s.ideaId=idea.id;
+  }
+  if(isResearched(idea) || /\bauto-harvest\b/i.test(s.notes||'')) idea.source='auto-research';
+  idea.text=s.title; idea.pillar=s.pillar;
+  if(s.notes!==undefined) idea.notes=s.notes;
+  if(s.caption!==undefined) idea.caption=s.caption;
+  idea.nextFormat=s.format;
+  return idea;
+}
+function returnToIdeas(idx){
+  const s=data.week[idx];
+  if(!s || s.stage==='posted') return;
+  if(notesTarget) closeNotes();
+  const idea=preserveSlot(s);
+  if(!idea) return;
+  idea.status='inbox'; delete idea.nextDay;
+  data.week[idx]={day:s.day, ideaId:null, pillar:'P1', format:'TH', title:'', stage:'planned', postedDate:null, notes:'', caption:''};
+  saveLocal(); renderAll(); toast('Moved back to Ideas — script and caption saved');
+}
+
 /* swap an emergency idea into a given week slot */
 function swapIntoDay(ideaId, idx){
   const idea = data.ideas.find(x=>x.id===ideaId); if(!idea) return;
   const s = data.week[idx]; if(!s) return;
-  if(s.ideaId){ const old=data.ideas.find(x=>x.id===s.ideaId); if(old && old.status==='scheduled') old.status='inbox'; }
+  if(s.ideaId===ideaId) return;
+  if(data.week.some((slot,k)=>k!==idx && slot.ideaId===ideaId)){ toast('This idea is already in this week'); return; }
+  if(notesTarget) closeNotes();
+  const old=preserveSlot(s);
+  if(old) old.status=s.stage==='posted'?'used':'inbox';
   s.ideaId=idea.id; s.title=idea.text; s.pillar=idea.pillar;
   s.format = idea.pillar==='P2' || /carousel/i.test(idea.text) ? 'carousel' : 'text';
   s.stage='planned'; s.postedDate=null; s.notes=idea.notes||''; s.caption=idea.caption||''; idea.status='scheduled';
@@ -1806,8 +1852,7 @@ function startNewWeek(){
   if(!confirm(`Roll over to week ${data.meta.weekNumber+1}? Posted ideas are archived; the shortlist fills next week's slots.`)) return;
 
   for(const s of data.week){
-    if(!s.ideaId) continue;
-    const idea = data.ideas.find(i=>i.id===s.ideaId);
+    const idea = preserveSlot(s);
     if(!idea) continue;
     idea.status = s.stage==='posted' ? 'used' : 'shortlist';
   }
@@ -1822,6 +1867,7 @@ function startNewWeek(){
                     : { day:d, ideaId:null, pillar:'P1', format:'TH', title:'', stage:'planned', postedDate:null, notes:'', caption:'' });
     if(idea){ idea.status='scheduled'; delete idea.nextDay; }
   }
+  if(notesTarget) closeNotes();
   data.week = slots;
   data.meta.weekNumber++;
   saveLocal(); renderAll();
@@ -1865,6 +1911,7 @@ document.addEventListener('click', e => {
     }
     saveLocal(); renderAll(); return;
   }
+  if(t.dataset.returnidea !== undefined){ returnToIdeas(+t.dataset.returnidea); return; }
   if(t.dataset.wmove !== undefined){
     const [i,d] = t.dataset.wmove.split('|').map(Number);
     const j = i + d;
@@ -1938,14 +1985,8 @@ document.addEventListener('click', e => {
   }
   if(t.id==='emClose'){ $('#emModal').classList.remove('open'); return; }
   if(t.dataset.empick){
-    const idea = data.ideas.find(x=>x.id===t.dataset.empick);
-    const s = data.week[emSlotIdx];
-    if(s.ideaId){ const old=data.ideas.find(x=>x.id===s.ideaId); if(old) old.status='inbox'; }
-    s.ideaId=idea.id; s.title=idea.text; s.pillar=idea.pillar;
-    s.format = idea.pillar==='P2'||idea.text.toLowerCase().includes('carousel') ? 'carousel' : 'text';
-    s.stage='planned'; idea.status='scheduled';
     $('#emModal').classList.remove('open');
-    saveLocal(); renderAll(); toast('Swapped in — 20 minutes, streak intact'); return;
+    swapIntoDay(t.dataset.empick, emSlotIdx); return;
   }
 });
 
@@ -1972,6 +2013,7 @@ document.addEventListener('input', e => {
   if(t.dataset.wtitle !== undefined){ data.week[+t.dataset.wtitle].title=t.textContent; debSave(); return; }
   if(t.dataset.sltitle !== undefined){ const i=data.ideas.find(x=>x.id===t.dataset.sltitle); if(i) i.text=t.textContent; debSave(); return; }
   if(t.id==='ndText' && notesTarget){
+    rememberResearchSources();
     const f = notesTarget.field || 'notes';
     if(notesTarget.kind==='week'){ data.week[notesTarget.idx][f]=t.value; }
     else { const i=data.ideas.find(x=>x.id===notesTarget.id); if(i) i[f]=t.value; }
@@ -1994,12 +2036,22 @@ function openNotes(target){
   else { obj=data.ideas.find(x=>x.id===target.id); if(!obj){ notesTarget=null; return; } sub=`${obj.pillar} idea · ${clip(obj.text)}`; }
   $('#ndSub').textContent = sub;
   $('#ndText').value = obj[target.field || 'notes'] || '';
+  updateEditorViewport();
   $('#notesDrawer').classList.add('open');
   $('#ndText').focus();
   renderWeek(); renderIdeas(); renderShortlist();
 }
-function closeNotes(){ notesTarget=null; $('#notesDrawer').classList.remove('open'); renderWeek(); renderIdeas(); renderShortlist(); }
+function closeNotes(){ clearTimeout(debTimer); saveLocal(); notesTarget=null; $('#notesDrawer').classList.remove('open'); renderWeek(); renderIdeas(); renderShortlist(); }
 
+function updateEditorViewport(){
+  const viewport=window.visualViewport;
+  const drawer=$('#notesDrawer');
+  drawer.style.setProperty('--editor-height', (viewport?viewport.height:window.innerHeight)+'px');
+  drawer.style.setProperty('--editor-top', (viewport?viewport.offsetTop:0)+'px');
+}
+window.visualViewport?.addEventListener('resize', updateEditorViewport);
+window.visualViewport?.addEventListener('scroll', updateEditorViewport);
+window.addEventListener('resize', updateEditorViewport);
 let emSlotIdx = null;
 function openEmergency(idx){
   emSlotIdx = idx;
